@@ -97,7 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f79cb0d4fca2f3342ad54f59358d1a8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cellInfo: {fileID: 0}
+  cellType: {fileID: 11400000, guid: 5d677f10489bcd748b0f1b1b201e8a32, type: 2}
   owner: 0
   unitNumber: 0
   foodNumber: 0

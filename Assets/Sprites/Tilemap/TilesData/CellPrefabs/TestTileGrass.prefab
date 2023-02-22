@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5817755039470258497}
   - component: {fileID: 5196070054999778974}
-  - component: {fileID: 8391695525982885848}
   - component: {fileID: 1727086420104706232}
+  - component: {fileID: 1329539144933248240}
   m_Layer: 0
   m_Name: TestTileGrass
   m_TagString: Untagged
@@ -86,23 +86,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &8391695525982885848
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4436078106027109137}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f79cb0d4fca2f3342ad54f59358d1a8a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _cellInfo: {fileID: 11400000, guid: 2595e83c216777149acb26712840cafa, type: 2}
-  owner: 0
-  unitNumber: 0
-  foodNumber: 0
-  isNestBuilt: 0
 --- !u!1839735485 &1727086420104706232
 Tilemap:
   m_ObjectHideFlags: 0
@@ -141,3 +124,20 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!114 &1329539144933248240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4436078106027109137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f79cb0d4fca2f3342ad54f59358d1a8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cellType: {fileID: 11400000, guid: 2595e83c216777149acb26712840cafa, type: 2}
+  owner: 0
+  unitNumber: 0
+  foodNumber: 0
+  isNestBuilt: 0

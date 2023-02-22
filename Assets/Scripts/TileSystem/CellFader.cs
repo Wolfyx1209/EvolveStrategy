@@ -16,8 +16,8 @@ public class CellFader : MonoBehaviour
             if (tile != null && tile != _previousTile)
             {
                 if(_previousTile != null)
-                    _previousTile.GetComponent<TerrainTile>().ChangeColorTo(Color.white);
-                tile.GetComponent<TerrainTile>().ChangeColorTo(Color.gray);
+                    _previousTile.GetComponent<TerrainCell>().ChangeColorTo(Color.white);
+                tile.GetComponent<TerrainCell>().ChangeColorTo(Color.gray);
                 _previousTile = tile;
             }
         }
