@@ -22,15 +22,16 @@ public class SwipeDetection : MonoBehaviour
         _inputManager.OnEndTouch -= EndSwipe;
     }
 
-    private void StartSwipe(Vector2 startPosition, float startTime)
+    private void StartSwipe(Vector3 startPosition, float startTime)
     {
         _startSwipePosition = startPosition;
         _startSwipeTime = startTime;
+        LineRenderer lr = new();
     }
 
-    private void EndSwipe(Vector2 endPosition, float endTime)
+    private void EndSwipe(Vector3 endPosition, float endTime)
     {
-        if(Vector2.Distance(_startSwipePosition, endPosition) >= swipeDeadZone && 
+        if(Vector3.Distance(_startSwipePosition, endPosition) >= swipeDeadZone && 
             _startSwipeTime - endTime <= swipeMaxDuration) 
         {
             EventBus.RaiseEvent<ISwipeHandler>(it => it.Swipe(_startSwipePosition, endPosition));

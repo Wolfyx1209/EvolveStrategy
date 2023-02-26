@@ -11,7 +11,7 @@ public class TouchPrinter : MonoBehaviour, ISwipeHandler
     {
         EventBus.Unsubscribe(this);
     }
-    public void Swipe(Vector2 swipeStartPosition, Vector2 swipeEndPosition)
+    public void Swipe(Vector3 swipeStartPosition, Vector3 swipeEndPosition)
     {
         Debug.Log("Start: " + swipeStartPosition + " End: " + swipeEndPosition);
     }

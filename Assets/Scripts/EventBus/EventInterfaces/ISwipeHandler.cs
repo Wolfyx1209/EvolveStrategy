@@ -4,6 +4,6 @@ namespace EventBusSystem
 { 
     public interface ISwipeHandler : IGlobalSubscriber
     {
-        public void Swipe(Vector2 swipeStartPosition, Vector2 swipeEndPosition);
+        public void Swipe(Vector3 swipeStartPosition, Vector3 swipeEndPosition);
     }
 }

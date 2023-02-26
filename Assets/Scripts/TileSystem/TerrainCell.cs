@@ -6,18 +6,57 @@ namespace TileSystem
     {
         private CellView view => 
             GetComponentInChildren<CellView>();
-        [SerializeField] public CellType cellType;
+        public CellType cellType;
 
-        [SerializeField] public Region region;
-        [SerializeField] public PlayersList owner;
-        [SerializeField] public int unitNumber;
-        [SerializeField] public int foodNumber;
-        [SerializeField] public bool isNestBuilt;
+        private Region _region;
+        [SerializeField] private PlayersList _owner;
+        [SerializeField] private int _unitNumber;
+        [SerializeField] private int _foodNumber;
+        [SerializeField] private bool _isNestBuilt; 
+
+        public Region region 
+        { 
+            get => _region;
+            set { _region = value; } 
+        }
+        public PlayersList owner
+        {
+            get => _owner;
+            set { _owner = value; }
+        }
+        public int unitNumber
+        {
+            get => _unitNumber;
+            set 
+            { 
+                _unitNumber = value;
+                UpdateUnitView();
+            } 
+        }
+        
+        public int foodNumber
+        {
+            get => _foodNumber;
+            set
+            {
+                _foodNumber = value;
+                UpdateFoodView();
+            }
+        }
+        public bool isNestBuilt
+        {
+            get => _isNestBuilt;
+            set
+            {
+                _isNestBuilt = value;
+                UpdateNestView();
+            }
+        }
 
         private void Awake()
         {
-            view.ChangeNestCondition(isNestBuilt);
-            view.ChangeUnitView(unitNumber);
+            UpdateNestView();
+            UpdateUnitView();
         }
 
         private SpriteRenderer _spriteRenderer => gameObject.GetComponent<SpriteRenderer>();
@@ -25,6 +64,20 @@ namespace TileSystem
         public void ChangeColorTo(Color color) 
         { 
             _spriteRenderer.color = color;
+        }
+        private void UpdateUnitView() 
+        {
+            view.UpdateUnitView(_unitNumber, _owner);
+        }
+
+        private void UpdateNestView() 
+        {
+            view.UpdateNestView(_isNestBuilt);
+        }
+
+        private void UpdateFoodView() 
+        { 
+            
         }
     }
 }

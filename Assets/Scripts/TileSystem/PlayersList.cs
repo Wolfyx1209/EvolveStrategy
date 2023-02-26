@@ -1,11 +1,9 @@
-namespace TileSystem
+public enum PlayersList
 {
-    public enum PlayersList
-    {
-        None,
-        Player,
-        Red,
-        Blue,
-        Green
-    }
+    None,
+    Player,
+    Red,
+    Blue,
+    Green
 }
+

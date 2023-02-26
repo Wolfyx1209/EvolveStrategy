@@ -4,10 +4,10 @@ using UnityEngine.InputSystem;
 public class InputManager : MonoBehaviour
 {
     #region Events
-    public delegate void StartTouch(Vector2 position, float time);
+    public delegate void StartTouch(Vector3 position, float time);
     public event StartTouch OnStartTouch;
 
-    public delegate void EndTouch(Vector2 position, float time);
+    public delegate void EndTouch(Vector3 position, float time);
     public event StartTouch OnEndTouch;
     #endregion
 
@@ -40,7 +40,7 @@ public class InputManager : MonoBehaviour
         if (OnStartTouch != null)
         {
             Vector3 contactPosition = inputActions.Touch.PrimaryPosition.ReadValue<Vector2>();
-            OnStartTouch(mainCamera.ScreenToWorldPoint(contactPosition), (float)context.startTime);
+            OnStartTouch.Invoke(mainCamera.ScreenToWorldPoint(contactPosition), (float)context.startTime);
         }
     }
 
@@ -49,7 +49,7 @@ public class InputManager : MonoBehaviour
         if (OnEndTouch != null)
         {
             Vector3 contactPosition = inputActions.Touch.PrimaryPosition.ReadValue<Vector2>();
-            OnEndTouch(mainCamera.ScreenToWorldPoint(contactPosition), (float)context.time);
+            OnEndTouch.Invoke(mainCamera.ScreenToWorldPoint(contactPosition), (float)context.time);
         }
     }
 }

@@ -138,10 +138,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cellType: {fileID: 11400000, guid: 2595e83c216777149acb26712840cafa, type: 2}
-  owner: 0
-  unitNumber: 0
-  foodNumber: 0
-  isNestBuilt: 0
+  _owner: 1
+  _unitNumber: 50
+  _foodNumber: 0
+  _isNestBuilt: 0
 --- !u!1001 &8764792847207910547
 PrefabInstance:
   m_ObjectHideFlags: 0
