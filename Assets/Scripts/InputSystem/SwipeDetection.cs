@@ -2,39 +2,64 @@ using UnityEngine;
 using EventBusSystem;
 public class SwipeDetection : MonoBehaviour
 {
-    private InputManager _inputManager => GetComponent<InputManager>();
+    private InputManager _inputManager;
 
-    private Vector2 _startSwipePosition;
-    private float _startSwipeTime;
+    private Vector2 _startRightSwipePosition;
+    private float _startRightSwipeTime;
 
-    public float swipeDeadZone = 1f;
-    public float swipeMaxDuration = 2f;
+
+    private Vector2 _startLeftSwipePosition;
+    private float _startLeftSwipeTime;
+
+    [SerializeField] private float swipeDeadZone = 1f;
+    [SerializeField] private float swipeMaxDuration = 2f;
 
     private void OnEnable()
     {
-        _inputManager.OnStartTouch += StartSwipe;
-        _inputManager.OnEndTouch += EndSwipe;
+        _inputManager = InputManager.instance;
+        _inputManager.OnStartLeftMouseTouch += StartLeftSwipe;
+        _inputManager.OnEndLeftMouseTouch += EndLeftSwipe;
+
+        _inputManager.OnStartRightMouseTouch += StartRightSwipe;
+        _inputManager.OnEndRightMouseTouch += EndRightSwipe;
     }
 
     private void OnDisable()
     {
-        _inputManager.OnStartTouch -= StartSwipe;
-        _inputManager.OnEndTouch -= EndSwipe;
+        _inputManager.OnStartLeftMouseTouch -= StartLeftSwipe;
+        _inputManager.OnEndLeftMouseTouch -= EndLeftSwipe;
+
+        _inputManager.OnStartRightMouseTouch -= StartRightSwipe;
+        _inputManager.OnEndRightMouseTouch -= EndRightSwipe;
     }
 
-    private void StartSwipe(Vector3 startPosition, float startTime)
+    private void StartLeftSwipe(Vector3 startPosition, float startTime)
     {
-        _startSwipePosition = startPosition;
-        _startSwipeTime = startTime;
-        LineRenderer lr = new();
+        _startLeftSwipePosition = startPosition;
+        _startLeftSwipeTime = startTime;
     }
 
-    private void EndSwipe(Vector3 endPosition, float endTime)
+    private void EndLeftSwipe(Vector3 endPosition, float endTime)
     {
-        if(Vector3.Distance(_startSwipePosition, endPosition) >= swipeDeadZone && 
-            _startSwipeTime - endTime <= swipeMaxDuration) 
+        if(Vector3.Distance(_startLeftSwipePosition, endPosition) >= swipeDeadZone && 
+            _startLeftSwipeTime - endTime <= swipeMaxDuration) 
         {
-            EventBus.RaiseEvent<ISwipeHandler>(it => it.Swipe(_startSwipePosition, endPosition));
+            EventBus.RaiseEvent<ISwipeHandler>(it => it.LeftSwipe(_startLeftSwipePosition, endPosition));
+        }
+    }
+
+    private void StartRightSwipe(Vector3 startPosition, float startTime)
+    {
+        _startRightSwipePosition = startPosition;
+        _startRightSwipeTime = startTime;
+    }
+
+    private void EndRightSwipe(Vector3 endPosition, float endTime)
+    {
+        if (Vector3.Distance(_startRightSwipePosition, endPosition) >= swipeDeadZone &&
+            _startRightSwipeTime - endTime <= swipeMaxDuration)
+        {
+            EventBus.RaiseEvent<ISwipeHandler>(it => it.RightSwipe(_startRightSwipePosition, endPosition));
         }
     }
 }

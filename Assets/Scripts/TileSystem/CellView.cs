@@ -18,24 +18,7 @@ public class CellView : MonoBehaviour
     public void UpdateUnitView(int newUnitNumber, PlayersList owner)
     {
         _unitsNumberTxt.text = newUnitNumber.ToString();
-        switch (owner)
-        {
-            case (PlayersList.Player):
-                _unitsNumberTxt.faceColor = Color.yellow;
-                break;
-            case (PlayersList.None):
-                _unitsNumberTxt.faceColor = Color.gray;
-                break;
-            case (PlayersList.Red):
-                _unitsNumberTxt.faceColor = Color.red;
-                break;
-            case (PlayersList.Blue):
-                _unitsNumberTxt.faceColor = Color.blue;
-                break;
-            case (PlayersList.Green):
-                _unitsNumberTxt.faceColor = Color.green;
-                break;
-        }
+        _unitsNumberTxt.faceColor = new PlayersColors().GetColor(owner);
     }
 
     public void UpdateNestView(bool isBuilded) =>

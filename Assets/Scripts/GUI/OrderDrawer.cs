@@ -8,28 +8,32 @@ public class OrderDrawer : MonoBehaviour
     [SerializeField] private GameObject _aroow;
     [SerializeField] private Transform _parent;
 
-    private Dictionary<IAttackComand, Image> arrows = new();
+    private PlayersColors _colors = new();
+
+    private Dictionary<IAttackComand, ArrowView> arrows = new();
 
     public void NewComand(Vector3 fromCellPosition, Vector3 toCellPosition, IAttackComand comand)
     {
         Vector3 position = Vector3.Lerp(fromCellPosition, toCellPosition, 0.5f);
         Quaternion rotation = GetRorarionBetween(fromCellPosition, toCellPosition);
         GameObject newArrow = Instantiate(_aroow, position, rotation, _parent);
-        Image image = newArrow.GetComponent<Image>();
-        arrows.Add(comand, image);
+
+        ArrowView View= newArrow.GetComponent<ArrowView>();
+        View.InstanceColor(_colors.GetColor(comand.GetAttackingPlayer()));
+        arrows.Add(comand, View);
     }
 
     private void Update()
     {
         List<IAttackComand> deleteList = new();
-        foreach (KeyValuePair<IAttackComand, Image> pair in arrows)
+        foreach (KeyValuePair<IAttackComand, ArrowView> pair in arrows)
         {
             if (pair.Key.GetProgress() >= 1)
             {
                 deleteList.Add(pair.Key);
                 continue;
             }
-            pair.Value.fillAmount = pair.Key.GetProgress();
+            pair.Value.Refill(pair.Key.GetProgress());
         }
         DeleteComands(deleteList);
     }
@@ -38,8 +42,8 @@ public class OrderDrawer : MonoBehaviour
     {
         foreach (IAttackComand comand in comands)
         {
-            arrows.TryGetValue(comand, out Image image);
-            Destroy(image.gameObject);
+            arrows.TryGetValue(comand, out ArrowView view);
+            Destroy(view.gameObject);
             arrows.Remove(comand);
         }
     }

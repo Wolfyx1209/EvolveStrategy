@@ -27,6 +27,15 @@ namespace BattleSystem
             _timer.OnTimeOver += CommandSucsess;
             Coroutines.StartRoutine(UpdateProgress());
         }
+        public float GetProgress()
+        {
+            return progress;
+        }
+
+        public PlayersList GetAttackingPlayer() 
+        {
+            return _unit.owner;
+        }
 
         private IEnumerator UpdateProgress()
         {
@@ -42,11 +51,6 @@ namespace BattleSystem
             OnAttackEnd?.Invoke(_to, _unit, _unitCount);
             OnComandEnd?.Invoke(this);
             Coroutines.StopRoutine(UpdateProgress());
-        }
-
-        public float GetProgress()
-        {
-            return progress;
         }
     }
 }

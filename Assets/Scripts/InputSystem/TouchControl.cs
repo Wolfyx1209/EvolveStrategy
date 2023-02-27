@@ -28,7 +28,7 @@ public partial class @TouchControl: IInputActionCollection2, IDisposable
             ""id"": ""b42555a0-ec43-4e90-b2d7-8ecc89cc1af3"",
             ""actions"": [
                 {
-                    ""name"": ""PrimaryContact"",
+                    ""name"": ""LeftMouseContact"",
                     ""type"": ""PassThrough"",
                     ""id"": ""e6c31841-8007-4ea1-bb0c-2452338642e1"",
                     ""expectedControlType"": ""Button"",
@@ -44,6 +44,15 @@ public partial class @TouchControl: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RightMouseContact"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""ba853712-da4e-48ad-ac8c-9c9bfb65dbde"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press"",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -54,7 +63,7 @@ public partial class @TouchControl: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""PrimaryContact"",
+                    ""action"": ""LeftMouseContact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -68,6 +77,17 @@ public partial class @TouchControl: IInputActionCollection2, IDisposable
                     ""action"": ""PrimaryPosition"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dc4143d8-f2db-4446-86dc-39a29b21ff79"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RightMouseContact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -76,8 +96,9 @@ public partial class @TouchControl: IInputActionCollection2, IDisposable
 }");
         // Touch
         m_Touch = asset.FindActionMap("Touch", throwIfNotFound: true);
-        m_Touch_PrimaryContact = m_Touch.FindAction("PrimaryContact", throwIfNotFound: true);
+        m_Touch_LeftMouseContact = m_Touch.FindAction("LeftMouseContact", throwIfNotFound: true);
         m_Touch_PrimaryPosition = m_Touch.FindAction("PrimaryPosition", throwIfNotFound: true);
+        m_Touch_RightMouseContact = m_Touch.FindAction("RightMouseContact", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -139,14 +160,16 @@ public partial class @TouchControl: IInputActionCollection2, IDisposable
     // Touch
     private readonly InputActionMap m_Touch;
     private List<ITouchActions> m_TouchActionsCallbackInterfaces = new List<ITouchActions>();
-    private readonly InputAction m_Touch_PrimaryContact;
+    private readonly InputAction m_Touch_LeftMouseContact;
     private readonly InputAction m_Touch_PrimaryPosition;
+    private readonly InputAction m_Touch_RightMouseContact;
     public struct TouchActions
     {
         private @TouchControl m_Wrapper;
         public TouchActions(@TouchControl wrapper) { m_Wrapper = wrapper; }
-        public InputAction @PrimaryContact => m_Wrapper.m_Touch_PrimaryContact;
+        public InputAction @LeftMouseContact => m_Wrapper.m_Touch_LeftMouseContact;
         public InputAction @PrimaryPosition => m_Wrapper.m_Touch_PrimaryPosition;
+        public InputAction @RightMouseContact => m_Wrapper.m_Touch_RightMouseContact;
         public InputActionMap Get() { return m_Wrapper.m_Touch; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -156,22 +179,28 @@ public partial class @TouchControl: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_TouchActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_TouchActionsCallbackInterfaces.Add(instance);
-            @PrimaryContact.started += instance.OnPrimaryContact;
-            @PrimaryContact.performed += instance.OnPrimaryContact;
-            @PrimaryContact.canceled += instance.OnPrimaryContact;
+            @LeftMouseContact.started += instance.OnLeftMouseContact;
+            @LeftMouseContact.performed += instance.OnLeftMouseContact;
+            @LeftMouseContact.canceled += instance.OnLeftMouseContact;
             @PrimaryPosition.started += instance.OnPrimaryPosition;
             @PrimaryPosition.performed += instance.OnPrimaryPosition;
             @PrimaryPosition.canceled += instance.OnPrimaryPosition;
+            @RightMouseContact.started += instance.OnRightMouseContact;
+            @RightMouseContact.performed += instance.OnRightMouseContact;
+            @RightMouseContact.canceled += instance.OnRightMouseContact;
         }
 
         private void UnregisterCallbacks(ITouchActions instance)
         {
-            @PrimaryContact.started -= instance.OnPrimaryContact;
-            @PrimaryContact.performed -= instance.OnPrimaryContact;
-            @PrimaryContact.canceled -= instance.OnPrimaryContact;
+            @LeftMouseContact.started -= instance.OnLeftMouseContact;
+            @LeftMouseContact.performed -= instance.OnLeftMouseContact;
+            @LeftMouseContact.canceled -= instance.OnLeftMouseContact;
             @PrimaryPosition.started -= instance.OnPrimaryPosition;
             @PrimaryPosition.performed -= instance.OnPrimaryPosition;
             @PrimaryPosition.canceled -= instance.OnPrimaryPosition;
+            @RightMouseContact.started -= instance.OnRightMouseContact;
+            @RightMouseContact.performed -= instance.OnRightMouseContact;
+            @RightMouseContact.canceled -= instance.OnRightMouseContact;
         }
 
         public void RemoveCallbacks(ITouchActions instance)
@@ -191,7 +220,8 @@ public partial class @TouchControl: IInputActionCollection2, IDisposable
     public TouchActions @Touch => new TouchActions(this);
     public interface ITouchActions
     {
-        void OnPrimaryContact(InputAction.CallbackContext context);
+        void OnLeftMouseContact(InputAction.CallbackContext context);
         void OnPrimaryPosition(InputAction.CallbackContext context);
+        void OnRightMouseContact(InputAction.CallbackContext context);
     }
 }

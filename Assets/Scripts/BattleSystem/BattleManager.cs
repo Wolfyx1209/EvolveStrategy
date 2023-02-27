@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BattleSystem
 {
-    public class BattleManager : MonoBehaviour, ISwipeHandler
+    public class BattleManager : Singletone<BattleManager>, ISwipeHandler
     {
         private OrderDrawer OrderDrawer => 
             FindObjectOfType<OrderDrawer>();
@@ -36,21 +36,41 @@ namespace BattleSystem
             OrderDrawer.NewComand(from.transform.position, to.transform.position, attackCell);
         }
 
-        public void Swipe(Vector3 swipeStartPosition, Vector3 swipeEndPosition)
+        public void RightSwipe(Vector3 swipeStartPosition, Vector3 swipeEndPosition)
         {
-            if (_terrainTilemap.ContainTile(swipeStartPosition)
-                && _terrainTilemap.ContainTile(swipeEndPosition))
-            { 
+            if (IsÑonditionsÑorrect(swipeStartPosition, swipeEndPosition))
+            {
                 TerrainCell from = _terrainTilemap.GetTile(swipeStartPosition);
                 TerrainCell to = _terrainTilemap.GetTile(swipeEndPosition);
-                if(_terrainTilemap.isCellsNeighbours(to, from) && from.unitNumber / 2 >0) 
-                { 
-                    GiveOrderToAttack(from, to, from.unitNumber/2);
-                }
+                GiveOrderToAttack(from, to, from.unitNumber / 2);
+            }
+        }
+        public void LeftSwipe(Vector3 swipeStartPosition, Vector3 swipeEndPosition)
+        {
+            if(IsÑonditionsÑorrect(swipeStartPosition, swipeEndPosition)) 
+            {
+                TerrainCell from = _terrainTilemap.GetTile(swipeStartPosition);
+                TerrainCell to = _terrainTilemap.GetTile(swipeEndPosition);
+                GiveOrderToAttack(from, to, from.unitNumber);
             }
         }
 
-        public void ChoseBattleSituation(TerrainCell to, Unit unit, int unitCount)
+        private bool IsÑonditionsÑorrect(Vector3 cellA, Vector3 cellB) 
+        {
+            if (_terrainTilemap.ContainTile(cellA)
+                && _terrainTilemap.ContainTile(cellB))
+            {
+                TerrainCell from = _terrainTilemap.GetTile(cellA);
+                TerrainCell to = _terrainTilemap.GetTile(cellB);
+                if (_terrainTilemap.isCellsNeighbours(to, from) && from.unitNumber >= 1)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void ChoseBattleSituation(TerrainCell to, Unit unit, int unitCount)
         {
             if (unit.owner != to.owner)
             {

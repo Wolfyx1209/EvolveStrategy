@@ -6,7 +6,7 @@
             "id": "b42555a0-ec43-4e90-b2d7-8ecc89cc1af3",
             "actions": [
                 {
-                    "name": "PrimaryContact",
+                    "name": "LeftMouseContact",
                     "type": "PassThrough",
                     "id": "e6c31841-8007-4ea1-bb0c-2452338642e1",
                     "expectedControlType": "Button",
@@ -22,6 +22,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "RightMouseContact",
+                    "type": "PassThrough",
+                    "id": "ba853712-da4e-48ad-ac8c-9c9bfb65dbde",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -32,7 +41,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "PrimaryContact",
+                    "action": "LeftMouseContact",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -44,6 +53,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "PrimaryPosition",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dc4143d8-f2db-4446-86dc-39a29b21ff79",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightMouseContact",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

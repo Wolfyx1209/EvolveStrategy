@@ -1,15 +1,23 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class InputManager : MonoBehaviour
+public class InputManager : Singletone<InputManager>
 {
     #region Events
-    public delegate void StartTouch(Vector3 position, float time);
-    public event StartTouch OnStartTouch;
+    public delegate void StartLeftMouseTouch(Vector3 position, float time);
+    public event StartLeftMouseTouch OnStartLeftMouseTouch;
 
-    public delegate void EndTouch(Vector3 position, float time);
-    public event StartTouch OnEndTouch;
+    public delegate void EndLeftMouseTouch(Vector3 position, float time);
+    public event EndLeftMouseTouch OnEndLeftMouseTouch;
+
+    public delegate void StartRightMouseTouch(Vector3 position, float time);
+    public event StartRightMouseTouch OnStartRightMouseTouch;
+
+    public delegate void EndRightMouseTouch(Vector3 position, float time);
+    public event EndRightMouseTouch OnEndRightMouseTouch;
     #endregion
+
+    public Vector3 cursorPosition { get; private set; }
 
     private Camera mainCamera => Camera.main;
     private TouchControl inputActions;
@@ -31,25 +39,41 @@ public class InputManager : MonoBehaviour
 
     private void Start()
     {
-        inputActions.Touch.PrimaryContact.started += ctx => StartPrimaryContact(ctx);
-        inputActions.Touch.PrimaryContact.canceled += ctx => EndPrimaryContact(ctx);
+        inputActions.Touch.LeftMouseContact.started += ctx => StartLeftMouseContact(ctx);
+        inputActions.Touch.LeftMouseContact.canceled += ctx => EndLeftMouseContact(ctx);
+
+        inputActions.Touch.RightMouseContact.started += ctx => StartRightMouseContact(ctx);
+        inputActions.Touch.RightMouseContact.canceled += ctx => EndRightMouseContact(ctx);
     }
 
-    private void StartPrimaryContact(InputAction.CallbackContext context)
+    private void Update()
     {
-        if (OnStartTouch != null)
-        {
-            Vector3 contactPosition = inputActions.Touch.PrimaryPosition.ReadValue<Vector2>();
-            OnStartTouch.Invoke(mainCamera.ScreenToWorldPoint(contactPosition), (float)context.startTime);
-        }
+        cursorPosition = GetCursorPosition();
     }
 
-    private void EndPrimaryContact(InputAction.CallbackContext context)
+    private void StartLeftMouseContact(InputAction.CallbackContext context)
     {
-        if (OnEndTouch != null)
-        {
-            Vector3 contactPosition = inputActions.Touch.PrimaryPosition.ReadValue<Vector2>();
-            OnEndTouch.Invoke(mainCamera.ScreenToWorldPoint(contactPosition), (float)context.time);
-        }
+        OnStartLeftMouseTouch.Invoke(cursorPosition, (float)context.startTime);
+    }
+
+    private void EndLeftMouseContact(InputAction.CallbackContext context)
+    {
+         OnEndLeftMouseTouch.Invoke(cursorPosition, (float)context.time);
+    }
+
+    private void StartRightMouseContact(InputAction.CallbackContext context)
+    {
+        OnStartRightMouseTouch?.Invoke(cursorPosition, (float)context.startTime);
+    }
+
+    private void EndRightMouseContact(InputAction.CallbackContext context)
+    {
+        OnEndRightMouseTouch?.Invoke(cursorPosition, (float)context.time);
+    }
+
+    private Vector3 GetCursorPosition() 
+    {
+        Vector3 contactPosition = inputActions.Touch.PrimaryPosition.ReadValue<Vector2>();
+        return mainCamera.ScreenToWorldPoint(contactPosition);
     }
 }
