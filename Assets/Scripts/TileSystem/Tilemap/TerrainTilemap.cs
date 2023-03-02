@@ -117,6 +117,7 @@ namespace TileSystem
             Region newRegion = new();
             DefineAllCellsForNewRegion(cell, newRegion);
             newRegion.DrawRegionBoundes();
+            newRegion.HideCellsInfo();
             return newRegion;
         }
 
@@ -127,7 +128,7 @@ namespace TileSystem
 
             while (cellToAnalyz.TryDequeue(out TerrainCell currentCell))
             {
-                region._regionCells.Add(currentCell);
+                region.AddCell(currentCell);
                 currentCell.region = region;
                 List<TerrainCell> neighborhoodCells =
                     GetCellNeighbors(currentCell);

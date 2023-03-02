@@ -4,11 +4,24 @@ namespace TileSystem
 {
     public class TerrainCell : MonoBehaviour
     {
+        #region Events
+        public delegate void OwnerChenge(PlayersList previousOwner, PlayersList newOwner, TerrainCell cell);
+        public event OwnerChenge OnOwnerChenge;
+
+        public delegate void UnitNumberChenge(int previousNumber, int newNumber, TerrainCell cell);
+        public event UnitNumberChenge OnUnitNumberChenge;
+
+        public delegate void NestConditionChenge(bool preciousState, bool newState, TerrainCell cell);
+        public event NestConditionChenge OnNestConditionChenge;
+
+        public delegate void FoodNumberChenge(int previousNumber, int newNumber, TerrainCell cell);
+        public event UnitNumberChenge OnFoodNumberChenge;
+        #endregion
         private CellView view => 
             GetComponentInChildren<CellView>();
         public CellType cellType;
 
-        private Region _region;
+        private Region _region = null;
         [SerializeField] private PlayersList _owner;
         [SerializeField] private int _unitNumber;
         [SerializeField] private int _foodNumber;
@@ -22,13 +35,18 @@ namespace TileSystem
         public PlayersList owner
         {
             get => _owner;
-            set { _owner = value; }
+            set 
+            {
+                _owner = value;
+                OnOwnerChenge?.Invoke(_owner, value, this);
+            }
         }
         public int unitNumber
         {
             get => _unitNumber;
             set 
             { 
+                OnUnitNumberChenge?.Invoke(_unitNumber, value, this);
                 _unitNumber = value;
                 UpdateUnitView();
             } 
@@ -39,6 +57,7 @@ namespace TileSystem
             get => _foodNumber;
             set
             {
+                OnFoodNumberChenge?.Invoke(_foodNumber, value, this);
                 _foodNumber = value;
                 UpdateFoodView();
             }
@@ -48,6 +67,7 @@ namespace TileSystem
             get => _isNestBuilt;
             set
             {
+                OnNestConditionChenge.Invoke(_isNestBuilt, value, this);
                 _isNestBuilt = value;
                 UpdateNestView();
             }
@@ -64,6 +84,16 @@ namespace TileSystem
         public void ChangeColorTo(Color color) 
         { 
             _spriteRenderer.color = color;
+        }
+
+        public void HideView() 
+        {
+            view.HideView();
+        }
+
+        public void ShowView() 
+        {
+            view.ShowView();
         }
         private void UpdateUnitView() 
         {

@@ -18,14 +18,41 @@ public class CellView : MonoBehaviour
     public void UpdateUnitView(int newUnitNumber, PlayersList owner)
     {
         _unitsNumberTxt.text = newUnitNumber.ToString();
-        _unitsNumberTxt.faceColor = new PlayersColors().GetColor(owner);
+        float al = _unitsNumberTxt.faceColor.a;
+        Color col = new PlayersColors().GetColor(owner);
+        col.a = al;
+        _unitsNumberTxt.faceColor = col;
     }
 
-    public void UpdateNestView(bool isBuilded) =>
-        _nestIcon.gameObject.SetActive(isBuilded);
+    public void UpdateNestView(bool isBuilded) 
+    {
+        Color col = _nestIcon.color;
+        col.a = 0;
+        _nestIcon.color = col;
+    }
 
     public void UpdateFoodView()
     {
 
+    }
+
+    public void HideView() 
+    {
+        Color col = _unitsNumberTxt.faceColor;
+        col.a = 0;
+        _unitsNumberTxt.faceColor = col;
+        col = _nestIcon.color;
+        col.a = 0;
+        _nestIcon.color = col;
+    }
+
+    public void ShowView()
+    {
+        Color col = _unitsNumberTxt.faceColor;
+        col.a = 1;
+        _unitsNumberTxt.faceColor = col;
+        col = _nestIcon.color;
+        col.a = 1;
+        _nestIcon.color = col;
     }
 }
