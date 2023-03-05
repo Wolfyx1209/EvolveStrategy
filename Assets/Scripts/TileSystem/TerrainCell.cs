@@ -22,7 +22,7 @@ namespace TileSystem
         public CellType cellType;
 
         private Region _region = null;
-        private 
+        private Nest _nest;
         [SerializeField] private PlayersList _owner;
         [SerializeField] private int _unitNumber;
         [SerializeField] private int _foodNumber;
@@ -71,6 +71,7 @@ namespace TileSystem
                 OnNestConditionChenge.Invoke(_isNestBuilt, value, this);
                 _isNestBuilt = value;
                 UpdateNestView();
+                BuildOrDestroyNest();
             }
         }
 
@@ -78,10 +79,7 @@ namespace TileSystem
         {
             UpdateNestView();
             UpdateUnitView();
-            if (isNestBuilt) 
-            { 
-                
-            }
+            BuildOrDestroyNest();
         }
 
         private SpriteRenderer _spriteRenderer => gameObject.GetComponent<SpriteRenderer>();
@@ -113,6 +111,18 @@ namespace TileSystem
         private void UpdateFoodView() 
         { 
             
+        }
+
+        private void BuildOrDestroyNest() 
+        {
+            if (isNestBuilt)
+            {
+                _nest = new Nest(this);
+            }
+            else
+            {
+                _nest = null;
+            }
         }
     }
 }

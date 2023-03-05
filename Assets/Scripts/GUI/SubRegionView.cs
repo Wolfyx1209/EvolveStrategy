@@ -133,12 +133,18 @@ public class SubRegionView : MonoBehaviour
         Color col = _unitsNumberTxt.faceColor;
         col.a = 0;
         _unitsNumberTxt.faceColor = col;
+        col = _nestIcon.color;
+        col.a = 0;
+        _nestIcon.color = col;
     }
     private void ShowGeneralInfo() 
     {
         Color col = _unitsNumberTxt.faceColor;
         col.a = 1;
         _unitsNumberTxt.faceColor = col;
+        col = _nestIcon.color;
+        col.a = isNestBuilt? 1 : 0;
+        _nestIcon.color = col;
     }
 
     private void UpdateUnitView()

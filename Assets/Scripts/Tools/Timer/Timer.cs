@@ -7,22 +7,32 @@ public class Timer
     public float passedTime { get; private set; }
     public float progress { get; private set; }
 
-    private bool isTimerStarted;
+    private bool _isTimerStarted;
+    private float _seconds;
 
     public delegate void TimeOver();
     public event TimeOver OnTimeOver;
     public void StartTimer(float seconds)
     {
-        if (!isTimerStarted)
+        if (!_isTimerStarted)
         {
-            isTimerStarted = true;
+            _isTimerStarted = true;
             passedTime = 0;
             progress = 0;
-            Coroutines.StartRoutine(startCouting(seconds));
+            _seconds = seconds;
+            Coroutines.StartRoutine(startCouting(_seconds));
         }
         else
         {
             throw new Exception("This timer already start");
+        }
+    }
+
+    public void StopTimer() 
+    {
+        if (_isTimerStarted) 
+        {
+            Coroutines.StopRoutine(startCouting(_seconds));
         }
     }
     private IEnumerator startCouting(float seconds)
@@ -33,7 +43,7 @@ public class Timer
             progress = passedTime / seconds;
             yield return null;
         }
+        _isTimerStarted = false;
         OnTimeOver?.Invoke();
-        isTimerStarted = false;
     }
 }
