@@ -22,6 +22,7 @@ namespace TileSystem
         public CellType cellType;
 
         private Region _region = null;
+        private 
         [SerializeField] private PlayersList _owner;
         [SerializeField] private int _unitNumber;
         [SerializeField] private int _foodNumber;
@@ -77,6 +78,10 @@ namespace TileSystem
         {
             UpdateNestView();
             UpdateUnitView();
+            if (isNestBuilt) 
+            { 
+                
+            }
         }
 
         private SpriteRenderer _spriteRenderer => gameObject.GetComponent<SpriteRenderer>();
@@ -93,7 +98,7 @@ namespace TileSystem
 
         public void ShowView() 
         {
-            view.ShowView();
+            view.ShowView(_isNestBuilt);
         }
         private void UpdateUnitView() 
         {

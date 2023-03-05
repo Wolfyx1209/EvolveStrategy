@@ -27,7 +27,7 @@ public class CellView : MonoBehaviour
     public void UpdateNestView(bool isBuilded) 
     {
         Color col = _nestIcon.color;
-        col.a = 0;
+        col.a = isBuilded? 1 : 0;
         _nestIcon.color = col;
     }
 
@@ -46,13 +46,11 @@ public class CellView : MonoBehaviour
         _nestIcon.color = col;
     }
 
-    public void ShowView()
+    public void ShowView(bool isBuilded)
     {
         Color col = _unitsNumberTxt.faceColor;
         col.a = 1;
         _unitsNumberTxt.faceColor = col;
-        col = _nestIcon.color;
-        col.a = 1;
-        _nestIcon.color = col;
+        UpdateNestView(isBuilded);
     }
 }

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7546525450150344218}
   - component: {fileID: 8782294472610134255}
   m_Layer: 5
-  m_Name: RegionView
+  m_Name: SubRegionView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

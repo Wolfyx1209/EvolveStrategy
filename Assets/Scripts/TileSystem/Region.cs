@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using EventBusSystem;
 
 namespace TileSystem
 {
@@ -9,9 +10,19 @@ namespace TileSystem
 
         public bool isNestInRegion;
 
-        private Dictionary<PlayersList, RegionView> _views = new();
+        private GameObject _regionView;
+        private NestBuildView _buildView;
+
+        private Dictionary<PlayersList, SubRegionView> _views = new();
 
         public bool isFade = true;
+
+        public Region() 
+        {
+            _regionView = new GameObject("RegionView");
+            _regionView.transform.SetParent(GameObject.FindGameObjectWithTag("GUICanvas").transform, false);
+            _regionView.AddComponent<RectTransform>();
+        }
 
         public void AddCell(TerrainCell cell) 
         {
@@ -33,7 +44,7 @@ namespace TileSystem
 
         public void ShowCellsInfo() 
         {
-            foreach (KeyValuePair<PlayersList, RegionView> pair in _views)
+            foreach (KeyValuePair<PlayersList, SubRegionView> pair in _views)
             {
                 pair.Value.ShowCellsInfo();
             }
@@ -42,19 +53,20 @@ namespace TileSystem
 
         public void HideCellsInfo() 
         {
-            foreach(KeyValuePair<PlayersList, RegionView> pair in _views) 
+            foreach(KeyValuePair<PlayersList, SubRegionView> pair in _views) 
             {
                 pair.Value.HideCellsInfo();
             }
             isFade = true;
         }
 
-        private RegionView CreateNewViewElement() 
+        private SubRegionView CreateNewSubViewElement() 
         {
-            GameObject newViewObject = Object.Instantiate(Resources.Load<GameObject>("ViewElements/RegionView"));
-            newViewObject.transform.SetParent(GameObject.FindGameObjectWithTag("GUICanvas").transform, false);
-            RegionView view = newViewObject.GetComponent<RegionView>();
+            GameObject newViewObject = Object.Instantiate(Resources.Load<GameObject>("ViewElements/SubRegionView"));
+            newViewObject.transform.SetParent(_regionView.transform, false);
+            SubRegionView view = newViewObject.GetComponent<SubRegionView>();
             view.OnCellChangeOwner += FindSubRegionForCell;
+            view.OnCellChangeOwner += NotifyIfRegionContloledOnePlayer;
             return view;
         }
 
@@ -66,9 +78,58 @@ namespace TileSystem
             }
             else
             {
-                _views.Add(cell.owner, CreateNewViewElement());
+                _views.Add(cell.owner, CreateNewSubViewElement());
                 _views[cell.owner].AddCell(cell);
             }
+        }
+        private void NotifyIfRegionContloledOnePlayer(TerrainCell cell) 
+        { 
+            if(IsOnePlayerControlRegion() && !isNestInRegion) 
+            {
+                EventBus.RaiseEvent<IRegionControleOnePlayerHandler>(it => it.RegionControlOnePlayer(this, cell.owner));
+                if(cell.owner == PlayersList.Player) 
+                {
+                    ShowNestBuildingViewForPlayer();
+                }
+            }
+        }
+        private bool IsOnePlayerControlRegion() 
+        {
+            PlayersList owner = _regionCells[0].owner;
+            foreach(TerrainCell cell in _regionCells) 
+            { 
+                if(cell.owner != owner) 
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        private void ShowNestBuildingViewForPlayer()
+        {
+            GameObject viewPrefab = (GameObject)Resources.Load("ViewElements/BuildNestIcon");
+            GameObject viewObject = Object.Instantiate(viewPrefab, _regionView.transform);
+            viewObject.transform.position = CalculateCenter();
+            _buildView = viewObject.GetComponent<NestBuildView>();
+            _buildView.OnClick += PlayerClickedOnNestBuildButton;
+
+        }
+
+        private void PlayerClickedOnNestBuildButton() 
+        {
+            EventBus.RaiseEvent<IPlayerChoosesNestCellHandler>(it => it.StartState(this));
+            _buildView.OnClick -= PlayerClickedOnNestBuildButton;
+            Object.Destroy(_buildView.gameObject);
+        }
+
+        private Vector3 CalculateCenter()
+        {
+            Vector3 center = new();
+            foreach (TerrainCell cell in _regionCells)
+            {
+                center += cell.transform.position;
+            }
+            return center / _regionCells.Count;
         }
     }
 }

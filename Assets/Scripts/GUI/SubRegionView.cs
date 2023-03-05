@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RegionView : MonoBehaviour
+public class SubRegionView : MonoBehaviour
 {
     public delegate void CellChangeOwner(TerrainCell cell);
     public event CellChangeOwner OnCellChangeOwner;

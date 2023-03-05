@@ -5,12 +5,13 @@ using UnityEngine;
 
 namespace BattleSystem
 {
-    public class BattleManager : Singletone<BattleManager>, ISwipeHandler
+    public class BattleManager : Singletone<BattleManager>, ISwipeHandler, IClickHandler
     {
-        private OrderDrawer OrderDrawer => 
-            FindObjectOfType<OrderDrawer>();
-        private TerrainTilemap _terrainTilemap =>
-            FindObjectOfType<TerrainTilemap>();
+        private OrderDrawer _orderDrawer;
+
+        private TerrainTilemap _terrainTilemap;
+
+        private NestBuilder _nestBuilder;
 
         private List<IComand> _comandList = new();
 
@@ -18,6 +19,9 @@ namespace BattleSystem
 
         private void OnEnable()
         {
+            if (_orderDrawer == null) _orderDrawer = FindObjectOfType<OrderDrawer>();
+            if(_terrainTilemap == null) _terrainTilemap = FindObjectOfType<TerrainTilemap>();
+            if (_nestBuilder == null) _nestBuilder = new NestBuilder();
             EventBus.Subscribe(this);
         }
 
@@ -33,7 +37,7 @@ namespace BattleSystem
             attackCell.OnAttackEnd += ChoseBattleSituation;
             attackCell.OnComandEnd += RemoveComand;
             _comandList.Add(attackCell);
-            OrderDrawer.NewComand(from.transform.position, to.transform.position, attackCell);
+            _orderDrawer.NewComand(from.transform.position, to.transform.position, attackCell);
         }
 
         public void RightSwipe(Vector3 swipeStartPosition, Vector3 swipeEndPosition)
@@ -95,6 +99,23 @@ namespace BattleSystem
         private void RemoveComand(IComand comand)
         {
             _comandList.Remove(comand);
+        }
+
+        public void RightClick(Vector3 position)
+        {
+
+        }
+
+        public void LeftClick(Vector3 position)
+        {
+            Debug.Log("gg");
+            if (_terrainTilemap.ContainTile(position)) 
+            {
+                if (_nestBuilder.TryBuildNest(_terrainTilemap.GetTile(position))) 
+                {
+                    EventBus.RaiseEvent<IPlayerChoosesNestCellHandler>(it => it.EndState(_terrainTilemap.GetTile(position).region));
+                }
+            }
         }
     }
 }
