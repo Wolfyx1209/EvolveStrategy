@@ -78,6 +78,19 @@ namespace TileSystem
             Vector3Int gridPosition = _baseTilemap.WorldToCell(worldPosition);
             return new Vector2Int(gridPosition.x, gridPosition.y);
         }
+
+        public List<TerrainCell> GetAllCellsOfOnePlayer(PlayersList player)
+        {
+            List<TerrainCell> cellsOfOnePlayer = new();
+            foreach (TerrainCell cell in _terrainTilemap.Values) 
+            { 
+                if(cell.owner == player) 
+                { 
+                    cellsOfOnePlayer.Add(cell);
+                }   
+            }
+            return cellsOfOnePlayer;
+        }
         private void InitializeTerrainMap()
         {
             for (int i = 0; i < transform.childCount; i++)

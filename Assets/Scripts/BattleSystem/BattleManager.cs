@@ -15,6 +15,8 @@ namespace BattleSystem
 
         private List<IComand> _comandList = new();
 
+        private PlayersUnits _playersUnits;
+
         private const float timeToAttack = 2f;
 
         private void OnEnable()
@@ -22,6 +24,7 @@ namespace BattleSystem
             if (_orderDrawer == null) _orderDrawer = FindObjectOfType<OrderDrawer>();
             if(_terrainTilemap == null) _terrainTilemap = FindObjectOfType<TerrainTilemap>();
             if (_nestBuilder == null) _nestBuilder = new NestBuilder();
+            if (_playersUnits == null) _playersUnits = PlayersUnits.instance;
             EventBus.Subscribe(this);
         }
 
@@ -29,9 +32,21 @@ namespace BattleSystem
         {
             EventBus.Unsubscribe(this);
         }
-        public void GiveOrderToAttack(TerrainCell from, TerrainCell to, int unitsSent)
+
+        public void TryGiveOrderToAttackHalfUnit(TerrainCell from, TerrainCell to) 
         {
-            Unit attackingUnit = PlayersUnits.GetUnit(from.owner);
+            if(Is—onditions—orrect(from, to))
+                GiveOrderToAttack(from, to, from.unitNumber / 2);
+        }
+
+        public void TryGiveOrderToAttackAllUnit(TerrainCell from, TerrainCell to)
+        {
+            if (Is—onditions—orrect(from, to))
+                GiveOrderToAttack(from, to, from.unitNumber);
+        }
+        private void GiveOrderToAttack(TerrainCell from, TerrainCell to, int unitsSent)
+        {
+            Unit attackingUnit = _playersUnits.GetUnit(from.owner);
             AttackCell attackCell = new(to, attackingUnit, unitsSent ,timeToAttack * attackingUnit.speed);
             from.unitNumber -= unitsSent;
             attackCell.OnAttackEnd += ChoseBattleSituation;
@@ -46,7 +61,7 @@ namespace BattleSystem
             {
                 TerrainCell from = _terrainTilemap.GetTile(swipeStartPosition);
                 TerrainCell to = _terrainTilemap.GetTile(swipeEndPosition);
-                GiveOrderToAttack(from, to, from.unitNumber / 2);
+                TryGiveOrderToAttackHalfUnit(from, to);
             }
         }
         public void LeftSwipe(Vector3 swipeStartPosition, Vector3 swipeEndPosition)
@@ -55,10 +70,18 @@ namespace BattleSystem
             {
                 TerrainCell from = _terrainTilemap.GetTile(swipeStartPosition);
                 TerrainCell to = _terrainTilemap.GetTile(swipeEndPosition);
-                GiveOrderToAttack(from, to, from.unitNumber);
+                TryGiveOrderToAttackHalfUnit(from, to);
             }
         }
 
+        private bool Is—onditions—orrect(TerrainCell from, TerrainCell to)
+        {
+            if (_terrainTilemap.isCellsNeighbours(to, from) && from.unitNumber >= 1)
+            {
+                return true;
+            }
+            return false;
+        }
         private bool Is—onditions—orrect(Vector3 cellA, Vector3 cellB) 
         {
             if (_terrainTilemap.ContainTile(cellA)
@@ -66,10 +89,7 @@ namespace BattleSystem
             {
                 TerrainCell from = _terrainTilemap.GetTile(cellA);
                 TerrainCell to = _terrainTilemap.GetTile(cellB);
-                if (_terrainTilemap.isCellsNeighbours(to, from) && from.unitNumber >= 1)
-                {
-                    return true;
-                }
+                return Is—onditions—orrect(from, to);
             }
             return false;
         }

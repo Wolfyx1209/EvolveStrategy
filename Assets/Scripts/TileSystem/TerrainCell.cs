@@ -1,3 +1,4 @@
+using EventBusSystem;
 using UnityEngine;
 
 namespace TileSystem
@@ -22,6 +23,8 @@ namespace TileSystem
         public CellType cellType;
 
         private Region _region = null;
+
+        private bool _isShowen; 
         private Nest _nest;
         [SerializeField] private PlayersList _owner;
         [SerializeField] private int _unitNumber;
@@ -38,8 +41,10 @@ namespace TileSystem
             get => _owner;
             set 
             {
+                PlayersList previousOwner = _owner;
                 _owner = value;
-                OnOwnerChenge?.Invoke(_owner, value, this);
+                EventBus.RaiseEvent<ICellChangeOwnerHandler>(it => it.ChangeOwner(previousOwner, value, this));
+                OnOwnerChenge?.Invoke(previousOwner, value, this);
             }
         }
         public int unitNumber
@@ -91,21 +96,23 @@ namespace TileSystem
 
         public void HideView() 
         {
+            _isShowen = false;
             view.HideView();
         }
 
         public void ShowView() 
         {
+            _isShowen = true;
             view.ShowView(_isNestBuilt);
         }
         private void UpdateUnitView() 
         {
-            view.UpdateUnitView(_unitNumber, _owner);
+            view.UpdateUnitView(_unitNumber, _owner, _isShowen);
         }
 
         private void UpdateNestView() 
         {
-            view.UpdateNestView(_isNestBuilt);
+            view.UpdateNestView(_isNestBuilt, _isShowen);
         }
 
         private void UpdateFoodView() 

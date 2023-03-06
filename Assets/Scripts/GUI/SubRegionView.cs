@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using TileSystem;
 using TMPro;
 using UnityEngine;
@@ -21,6 +22,8 @@ public class SubRegionView : MonoBehaviour
     private int _foodNumber;
     private bool _isNestBuilt;
     private PlayersList _owner;
+
+    private bool _isShowen = true;
     private int unitNumber
     {
         get => _unitNumber;
@@ -130,6 +133,7 @@ public class SubRegionView : MonoBehaviour
 
     private void HideGeneralInfo() 
     {
+        _isShowen = false;
         Color col = _unitsNumberTxt.faceColor;
         col.a = 0;
         _unitsNumberTxt.faceColor = col;
@@ -139,6 +143,7 @@ public class SubRegionView : MonoBehaviour
     }
     private void ShowGeneralInfo() 
     {
+        _isShowen = true;
         Color col = _unitsNumberTxt.faceColor;
         col.a = 1;
         _unitsNumberTxt.faceColor = col;
@@ -151,14 +156,18 @@ public class SubRegionView : MonoBehaviour
     {
         _unitsNumberTxt.text = unitNumber.ToString();
         Color ownerColor = new PlayersColors().GetColor(cells[0].owner);
+        ownerColor.a = _isShowen ? 1 :0 ;
         _unitsNumberTxt.faceColor = ownerColor;
     }
 
     private void UpdateNestView()
     {
-        Color col = _nestIcon.color;
-        col.a = isNestBuilt ? 1 : 0;
-        _nestIcon.color = col;
+        if (_isShowen) 
+        { 
+            Color col = _nestIcon.color;
+            col.a = isNestBuilt ? 1 : 0;
+            _nestIcon.color = col;
+        }
     }
 
     private void UpdateFoodView() 

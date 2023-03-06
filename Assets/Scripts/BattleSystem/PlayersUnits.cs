@@ -3,28 +3,15 @@ using UnityEngine;
 
 namespace BattleSystem
 {
-    public sealed class PlayersUnits : MonoBehaviour
+    public sealed class PlayersUnits : Singletone<PlayersUnits>
     {
-        private static Dictionary<PlayersList, Unit> units = new();
-        private static PlayersUnits instance
-        {
-            get
-            {
-                if (m_instance == null)
-                {
-                    GameObject gameObject = new GameObject("Player Units Repository");
-                    m_instance = gameObject.AddComponent<PlayersUnits>();
-                }
-                return m_instance;
-            }
-        }
-        private static PlayersUnits m_instance;
+        private Dictionary<PlayersList, Unit> units = new();
 
-        public static Unit GetUnit(PlayersList owner)
+        public Unit GetUnit(PlayersList owner)
         {
             if (!units.ContainsKey(owner))
             {
-                units.Add(PlayersList.Player, new Unit(PlayersList.Player));
+                units.Add(owner, new Unit(owner));
             }
             return units[owner];
         }

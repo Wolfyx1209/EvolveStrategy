@@ -15,20 +15,22 @@ public class CellView : MonoBehaviour
             gameObject.GetComponentInParent<Transform>().localScale;
     }
 
-    public void UpdateUnitView(int newUnitNumber, PlayersList owner)
+    public void UpdateUnitView(int newUnitNumber, PlayersList owner, bool isShowen)
     {
         _unitsNumberTxt.text = newUnitNumber.ToString();
-        float al = _unitsNumberTxt.faceColor.a;
         Color col = new PlayersColors().GetColor(owner);
-        col.a = al;
+        col.a = isShowen ? 1 : 0;
         _unitsNumberTxt.faceColor = col;
     }
 
-    public void UpdateNestView(bool isBuilded) 
+    public void UpdateNestView(bool isBuilded, bool isShowen) 
     {
-        Color col = _nestIcon.color;
-        col.a = isBuilded? 1 : 0;
-        _nestIcon.color = col;
+        if (isShowen) 
+        {
+            Color col = _nestIcon.color;
+            col.a = isBuilded ? 1 : 0;
+            _nestIcon.color = col;
+        }
     }
 
     public void UpdateFoodView()
@@ -51,6 +53,6 @@ public class CellView : MonoBehaviour
         Color col = _unitsNumberTxt.faceColor;
         col.a = 1;
         _unitsNumberTxt.faceColor = col;
-        UpdateNestView(isBuilded);
+        UpdateNestView(isBuilded, true);
     }
 }
