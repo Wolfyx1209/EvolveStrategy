@@ -29,17 +29,28 @@ namespace TileSystem
             if (!_regionCells.Contains(cell)) 
             { 
                 _regionCells.Add(cell);
+                isNestInRegion |= cell.isNestBuilt;  
                 FindSubRegionForCell(cell);
             }
         }
 
+        [System.Obsolete]
         public void DrawRegionBoundes() 
         {
-            Color color = Random.ColorHSV();
-            foreach(TerrainCell cell in _regionCells) 
-            {
-                cell.ChangeColorTo(color);
-            }
+            //Color color = Random.ColorHSV();
+            //foreach(TerrainCell cell in _regionCells) 
+            //{
+            //    cell.ChangeColorTo(color);
+            //}
+            //List<Vector3> vector3s = hm.GetCoordinatesOfCell();
+
+            BorderMetrics bm = new();
+            List<Vector3> vector3s = bm.GetRegionBorder(_regionCells);
+            GameObject go = (GameObject)Object.Instantiate(Resources.Load("ViewElements/RegionBorder"));
+            go.transform.SetParent(_regionView.transform);
+            LineRenderer lr = go.GetComponent<LineRenderer>();
+            lr.numPositions = vector3s.Count;
+            lr.SetPositions(vector3s.ToArray());
         }
 
         public void ShowCellsInfo() 

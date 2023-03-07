@@ -17,14 +17,18 @@ namespace BattleSystem
 
         private PlayersUnits _playersUnits;
 
-        private const float timeToAttack = 2f;
+        private const float DEFAULT_TIME_TO_ATTACK   = 4f;
+
+        private void Awake()
+        {
+            _playersUnits = PlayersUnits.instance;
+        }
 
         private void OnEnable()
         {
             if (_orderDrawer == null) _orderDrawer = FindObjectOfType<OrderDrawer>();
             if(_terrainTilemap == null) _terrainTilemap = FindObjectOfType<TerrainTilemap>();
             if (_nestBuilder == null) _nestBuilder = new NestBuilder();
-            if (_playersUnits == null) _playersUnits = PlayersUnits.instance;
             EventBus.Subscribe(this);
         }
 
@@ -47,7 +51,7 @@ namespace BattleSystem
         private void GiveOrderToAttack(TerrainCell from, TerrainCell to, int unitsSent)
         {
             Unit attackingUnit = _playersUnits.GetUnit(from.owner);
-            AttackCell attackCell = new(to, attackingUnit, unitsSent ,timeToAttack * attackingUnit.speed);
+            AttackCell attackCell = new(to, attackingUnit, unitsSent , DEFAULT_TIME_TO_ATTACK * attackingUnit.moveSpeed);
             from.unitNumber -= unitsSent;
             attackCell.OnAttackEnd += ChoseBattleSituation;
             attackCell.OnComandEnd += RemoveComand;
@@ -70,7 +74,7 @@ namespace BattleSystem
             {
                 TerrainCell from = _terrainTilemap.GetTile(swipeStartPosition);
                 TerrainCell to = _terrainTilemap.GetTile(swipeEndPosition);
-                TryGiveOrderToAttackHalfUnit(from, to);
+                TryGiveOrderToAttackAllUnit(from, to);
             }
         }
 
@@ -107,13 +111,32 @@ namespace BattleSystem
 
         }
 
-        private void IntatiateBattle(TerrainCell cell, int attackUnitCount, Unit unit)
+        private void IntatiateBattle(TerrainCell cell, int attackUnitCount, Unit attackUnit)
         {
-            if (cell.unitNumber - attackUnitCount < 0)
+            Unit defanceUnit = _playersUnits.GetUnit(cell.owner);
+
+            int defanceUnitCount = cell.unitNumber;
+            while(defanceUnitCount > 0 && attackUnitCount > 0) 
             {
-                cell.owner = unit.owner;
+                int mutalDefenderAttack = defanceUnit.attack * defanceUnitCount;
+                int mutalAttackingAttack = attackUnit.attack * attackUnitCount;
+
+                int killedDefenderUnits = (int)Mathf.Floor(mutalAttackingAttack / defanceUnit.defense);
+                int killedAttackingUnits = (int)Mathf.Floor(mutalDefenderAttack / attackUnit.defense);
+
+                attackUnitCount -= killedAttackingUnits;
+                defanceUnitCount -= killedDefenderUnits;
             }
-            cell.unitNumber = Mathf.Abs(cell.unitNumber - attackUnitCount);
+
+            if (attackUnitCount > 0)
+            {
+                cell.owner = attackUnit.owner;
+                cell.unitNumber = attackUnitCount;
+            }
+            else 
+            {
+                cell.unitNumber = defanceUnitCount > 0? defanceUnitCount: 0;
+            }
         }
 
         private void RemoveComand(IComand comand)
@@ -128,7 +151,6 @@ namespace BattleSystem
 
         public void LeftClick(Vector3 position)
         {
-            Debug.Log("gg");
             if (_terrainTilemap.ContainTile(position)) 
             {
                 if (_nestBuilder.TryBuildNest(_terrainTilemap.GetTile(position))) 

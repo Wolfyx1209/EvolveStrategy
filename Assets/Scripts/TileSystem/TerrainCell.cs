@@ -24,12 +24,12 @@ namespace TileSystem
 
         private Region _region = null;
 
-        private bool _isShowen; 
+        private bool _isShowen;
         private Nest _nest;
         [SerializeField] private PlayersList _owner;
         [SerializeField] private int _unitNumber;
         [SerializeField] private int _foodNumber;
-        [SerializeField] private bool _isNestBuilt; 
+        [SerializeField] private bool _isNestBuilt;
 
         public Region region 
         { 
@@ -43,6 +43,10 @@ namespace TileSystem
             {
                 PlayersList previousOwner = _owner;
                 _owner = value;
+                if(previousOwner == PlayersList.None) 
+                {
+                    _nest = new(this, isNestBuilt);
+                }
                 EventBus.RaiseEvent<ICellChangeOwnerHandler>(it => it.ChangeOwner(previousOwner, value, this));
                 OnOwnerChenge?.Invoke(previousOwner, value, this);
             }
@@ -84,7 +88,11 @@ namespace TileSystem
         {
             UpdateNestView();
             UpdateUnitView();
-            BuildOrDestroyNest();
+            if(_owner != PlayersList.None) 
+            {
+                _nest = new(this, _isNestBuilt);
+                BuildOrDestroyNest();
+            }
         }
 
         private SpriteRenderer _spriteRenderer => gameObject.GetComponent<SpriteRenderer>();
@@ -122,14 +130,7 @@ namespace TileSystem
 
         private void BuildOrDestroyNest() 
         {
-            if (isNestBuilt)
-            {
-                _nest = new Nest(this);
-            }
-            else
-            {
-                _nest = null;
-            }
+            _nest.isNestBuild = isNestBuilt;
         }
     }
 }

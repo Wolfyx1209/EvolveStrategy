@@ -24,11 +24,10 @@ namespace BattleSystem
 
         public bool TryBuildNest(TerrainCell cell) 
         {
-            Debug.Log("almost");
             if (_avalibleForNestBuilding.Contains(cell.region)) 
             {
-                Debug.Log("yes");
                 BuildNest(cell);
+                cell.region.isNestInRegion = true;
                 return true;
             }
             return false;

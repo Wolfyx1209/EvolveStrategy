@@ -29,7 +29,6 @@ public class BattleBot : MonoBehaviour, ICellChangeOwnerHandler
     {
         while(_myCells.Count > 0) 
         {
-            Debug.Log("Ok");
             foreach(TerrainCell cell in _myCells) 
             {
                 MakeDesigion(cell);
@@ -41,22 +40,22 @@ public class BattleBot : MonoBehaviour, ICellChangeOwnerHandler
     private void MakeDesigion(TerrainCell cell) 
     { 
         List<TerrainCell> cellToAnalysis = _tilemap.GetCellNeighbors(cell);
-        TerrainCell friendCell = null;
+        TerrainCell friendMaxCell = null;
         TerrainCell enemyMinCell = null;
         TerrainCell enemyMaxCell = null;
         foreach (TerrainCell currentCell in cellToAnalysis) 
         { 
             if(currentCell.owner == _me) 
             { 
-                if(friendCell == null)
+                if(friendMaxCell == null)
                 { 
-                    friendCell = currentCell;
+                    friendMaxCell = currentCell;
                 }
                 else 
                 { 
-                    if(friendCell.unitNumber < currentCell.unitNumber) 
+                    if(friendMaxCell.unitNumber < currentCell.unitNumber) 
                     {
-                        friendCell = currentCell;
+                        friendMaxCell = currentCell;
                     }
                 }
             }
@@ -90,11 +89,11 @@ public class BattleBot : MonoBehaviour, ICellChangeOwnerHandler
                 return;
             }
         }
-        if(friendCell != null) 
+        if(friendMaxCell != null) 
         { 
-            if(cell.unitNumber > 10) 
+            if(cell.unitNumber > 10 && cell.unitNumber < friendMaxCell.unitNumber) 
             {
-                _battleManager.TryGiveOrderToAttackHalfUnit(cell, friendCell);
+                _battleManager.TryGiveOrderToAttackHalfUnit(cell, friendMaxCell);
             }
         }
     }
