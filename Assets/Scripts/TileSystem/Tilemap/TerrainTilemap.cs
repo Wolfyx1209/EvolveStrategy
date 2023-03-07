@@ -91,6 +91,16 @@ namespace TileSystem
             }
             return cellsOfOnePlayer;
         }
+
+        public Vector3Int GetCellCoordinate(TerrainCell cell) 
+        {
+            return (Vector3Int)WorldPositionToGrid(cell.transform.position);
+        }
+
+        public TerrainCell GetCellFromGridCoordinate(Vector2Int coordinate) 
+        { 
+            return _terrainTilemap[coordinate];
+        }
         private void InitializeTerrainMap()
         {
             for (int i = 0; i < transform.childCount; i++)
