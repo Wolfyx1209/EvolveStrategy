@@ -10,13 +10,16 @@ public class SubRegionView : MonoBehaviour
     public delegate void CellChangeOwner(TerrainCell cell);
     public event CellChangeOwner OnCellChangeOwner;
 
+    public delegate void EmptyView(PlayersList owner);
+    public event EmptyView OnEmptyView;
+
     private TextMeshProUGUI _unitsNumberTxt =>
         GetComponentInChildren<TextMeshProUGUI>();
 
     private Image _nestIcon =>
         GetComponentInChildren<Image>();
 
-    private List<TerrainCell> cells = new();
+    private List<TerrainCell> _cells = new();
 
     [SerializeField]private int _unitNumber;
     private int _foodNumber;
@@ -60,32 +63,32 @@ public class SubRegionView : MonoBehaviour
     }
     private void OnEnable()
     {
-        foreach (TerrainCell cell in cells)
+        foreach (TerrainCell cell in _cells)
         {
             SubscribeToAllChangeIvennts(cell);
         }
     }
     private void OnDisable()
     {
-        foreach (TerrainCell cell in cells)
+        foreach (TerrainCell cell in _cells)
         {
             UnSubscribeToAllChangeIvennts(cell);
         }
     }
     private void OnDestroy()
     {
-        foreach (TerrainCell cell in cells)
+        foreach (TerrainCell cell in _cells)
         {
             UnSubscribeToAllChangeIvennts(cell);
         }
-        cells.Clear();
+        _cells.Clear();
     }
 
     public void ShowCellsInfo()
     {
-        if (cells.Count != 0)
+        if (_cells.Count != 0)
         {
-            foreach (TerrainCell cell in cells)
+            foreach (TerrainCell cell in _cells)
             {
                 cell.ShowView();
             }
@@ -95,9 +98,9 @@ public class SubRegionView : MonoBehaviour
 
     public void HideCellsInfo()
     {
-        if (cells.Count != 0)
+        if (_cells.Count != 0)
         {
-            foreach (TerrainCell cell in cells)
+            foreach (TerrainCell cell in _cells)
             {
                 cell.HideView();
             }
@@ -107,11 +110,11 @@ public class SubRegionView : MonoBehaviour
 
     public void AddCell(TerrainCell cell)
     {
-        if (!cells.Contains(cell))
+        if (!_cells.Contains(cell))
         {
             SubscribeToAllChangeIvennts(cell);
-            cells.Add(cell);
-            if (cells.Count == 0)
+            _cells.Add(cell);
+            if (_cells.Count == 0)
             {
                 owner = cell.owner;
             }
@@ -128,7 +131,7 @@ public class SubRegionView : MonoBehaviour
         unitNumber -= cell.unitNumber;
         foodNumber -= cell.foodNumber;
         isNestBuilt &= !cell.isNestBuilt;
-        cells.Remove(cell);
+        _cells.Remove(cell);
     }
 
     private void HideGeneralInfo() 
@@ -155,7 +158,7 @@ public class SubRegionView : MonoBehaviour
     private void UpdateUnitView()
     {
         _unitsNumberTxt.text = unitNumber.ToString();
-        Color ownerColor = new PlayersColors().GetColor(cells[0].owner);
+        Color ownerColor = new PlayersColors().GetColor(_cells[0].owner);
         ownerColor.a = _isShowen ? 1 :0 ;
         _unitsNumberTxt.faceColor = ownerColor;
     }
@@ -185,11 +188,11 @@ public class SubRegionView : MonoBehaviour
     private Vector3 CalculateCenter()
     {
         Vector3 center = new();
-        foreach (TerrainCell cell in cells)
+        foreach (TerrainCell cell in _cells)
         {
             center += cell.transform.position;
         }
-        return center / cells.Count;
+        return center / _cells.Count;
     }
 
     private void SubscribeToAllChangeIvennts(TerrainCell cell)
@@ -213,6 +216,10 @@ public class SubRegionView : MonoBehaviour
         {
             OnCellChangeOwner?.Invoke(cell);
             RemoveCell(cell);
+            if(_cells.Count == 0) 
+            {
+                OnEmptyView?.Invoke(_owner);
+            }
         }
     }
     private void ChangeUnitNumber(int previousNumber, int newNumber, TerrainCell cell)

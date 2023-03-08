@@ -17,7 +17,7 @@ namespace TileSystem
         public bool ContainTile(Vector3 worldCoordinate)
         {
             return ContainTile(
-                WorldPositionToGrid(worldCoordinate));
+                GetCoordinateFromWorldPosition(worldCoordinate));
         }
 
         public bool ContainTile(Vector2Int gridPosition) => _terrainTilemap.ContainsKey(gridPosition);
@@ -25,39 +25,16 @@ namespace TileSystem
         public TerrainCell GetTile(Vector3 worldPosition)
         {
             return GetTile(
-                WorldPositionToGrid(worldPosition));
+                GetCoordinateFromWorldPosition(worldPosition));
         }
         public TerrainCell GetTile(Vector2Int gridPosition) => _terrainTilemap[gridPosition];
-        public List<Vector2Int> GetCoordinatesOfNeighboringCells(TerrainCell cell)
-        {
-            Vector3 worldCoordinate = cell.transform.position;
-            return GetCoordinatesOfNeighboringCells(WorldPositionToGrid(worldCoordinate));
-        }
-        public List<Vector2Int> GetCoordinatesOfNeighboringCells(Vector2Int coordinate)
-        {
-            List<Vector2Int> coordinates = new();
-            coordinates.Add(new Vector2Int(coordinate.x - 1, coordinate.y));
-            coordinates.Add(new Vector2Int(coordinate.x + 1, coordinate.y));
-            coordinates.Add(new Vector2Int(coordinate.x, coordinate.y - 1));
-            coordinates.Add(new Vector2Int(coordinate.x, coordinate.y + 1));
-            if (coordinate.y % 2 == 0)
-            {
-                coordinates.Add(new Vector2Int(coordinate.x - 1, coordinate.y + 1));
-                coordinates.Add(new Vector2Int(coordinate.x - 1, coordinate.y - 1));
-            }
-            else
-            {
-                coordinates.Add(new Vector2Int(coordinate.x + 1, coordinate.y + 1));
-                coordinates.Add(new Vector2Int(coordinate.x + 1, coordinate.y - 1));
-            }
-            return coordinates;
-        }
 
         public List<TerrainCell> GetCellNeighbors(TerrainCell terrainCell)
         {
             List<TerrainCell> neighbors = new();
+            Vector2Int cellCoordinate = GetCoordinateFromWorldPosition(terrainCell.transform.position);
             List<Vector2Int> neighdorsCoordinate =
-                GetCoordinatesOfNeighboringCells(terrainCell);
+                HexMetrics.GetCoordinatesOfNeighboringCells(cellCoordinate);
             foreach (Vector2Int neighborCoordinate in neighdorsCoordinate)
             {
                 if (_terrainTilemap.TryGetValue(neighborCoordinate, out TerrainCell cell))
@@ -72,7 +49,7 @@ namespace TileSystem
         {
             return GetCellNeighbors(a).Contains(b);
         }
-        public Vector2Int WorldPositionToGrid(Vector3 worldPosition)
+        public Vector2Int GetCoordinateFromWorldPosition(Vector3 worldPosition)
         {
             worldPosition.z = _baseTilemap.transform.position.z;
             Vector3Int gridPosition = _baseTilemap.WorldToCell(worldPosition);
@@ -94,7 +71,7 @@ namespace TileSystem
 
         public Vector3Int GetCellCoordinate(TerrainCell cell) 
         {
-            return (Vector3Int)WorldPositionToGrid(cell.transform.position);
+            return (Vector3Int)GetCoordinateFromWorldPosition(cell.transform.position);
         }
 
         public TerrainCell GetCellFromGridCoordinate(Vector2Int coordinate) 
@@ -124,45 +101,48 @@ namespace TileSystem
                 if (!_terrainTilemap.ContainsValue(currentCell))
                 {
                     _terrainTilemap.Add(
-                        WorldPositionToGrid(currentCell.transform.position),
+                        GetCoordinateFromWorldPosition(currentCell.transform.position),
                         currentCell);
                 }
                 else
                 {
                     throw new Exception("You already have tile in coordinate: " +
-                        WorldPositionToGrid(currentCell.transform.position));
+                        GetCoordinateFromWorldPosition(currentCell.transform.position));
                 }
             }
         }
 
         private Region CreateRegionForCell(TerrainCell cell)
         {
-            Region newRegion = new();
-            DefineAllCellsForNewRegion(cell, newRegion);
-            newRegion.DrawRegionBoundes();
+            Region newRegion = new(DefineAllCellsForNewRegion(cell));
             newRegion.HideCellsInfo();
             return newRegion;
         }
 
-        private void DefineAllCellsForNewRegion(TerrainCell startCell, Region region)
+        private List<TerrainCell> DefineAllCellsForNewRegion(TerrainCell startCell)
         {
+            List<TerrainCell> regionCells = new();
             Queue<TerrainCell> cellToAnalyz = new();
             cellToAnalyz.Enqueue(startCell);
 
             while (cellToAnalyz.TryDequeue(out TerrainCell currentCell))
             {
-                region.AddCell(currentCell);
-                currentCell.region = region;
+                if (!regionCells.Contains(currentCell)) 
+                {
+                    regionCells.Add(currentCell);
+                }
                 List<TerrainCell> neighborhoodCells =
                     GetCellNeighbors(currentCell);
                 foreach (TerrainCell neighbour in neighborhoodCells)
                 {
-                    if (neighbour.region == null && neighbour.cellType == startCell.cellType)
+                    if (!regionCells.Contains(neighbour) && neighbour.cellType == startCell.cellType)
                     {
                         cellToAnalyz.Enqueue(neighbour);
                     }
                 }
             }
+
+            return regionCells;
         }
     }
 

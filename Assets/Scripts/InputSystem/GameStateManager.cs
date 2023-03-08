@@ -25,8 +25,11 @@ public class GameStateManager : MonoBehaviour, IPlayerChoosesNestCellHandler
 
     private void ChangeCurrentState(IGameState newState)
     {
-        currentState.Exit(gameObject);
-        currentState = newState;
-        currentState.Entry(gameObject);
+        if(currentState != newState) 
+        {
+            currentState.Exit(gameObject);
+            currentState = newState;
+            currentState.Entry(gameObject);
+        }
     }
 }

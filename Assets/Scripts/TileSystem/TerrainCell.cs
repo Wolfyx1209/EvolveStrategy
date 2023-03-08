@@ -25,7 +25,7 @@ namespace TileSystem
         private Region _region = null;
 
         private bool _isShowen;
-        private Nest _nest;
+        private ICellBased building;
         [SerializeField] private PlayersList _owner;
         [SerializeField] private int _unitNumber;
         [SerializeField] private int _foodNumber;
@@ -43,10 +43,7 @@ namespace TileSystem
             {
                 PlayersList previousOwner = _owner;
                 _owner = value;
-                if(previousOwner == PlayersList.None) 
-                {
-                    _nest = new(this, isNestBuilt);
-                }
+                BuildOrDestroyNest();
                 EventBus.RaiseEvent<ICellChangeOwnerHandler>(it => it.ChangeOwner(previousOwner, value, this));
                 OnOwnerChenge?.Invoke(previousOwner, value, this);
             }
@@ -90,7 +87,7 @@ namespace TileSystem
             UpdateUnitView();
             if(_owner != PlayersList.None) 
             {
-                _nest = new(this, _isNestBuilt);
+                building = new SimpleSpawner(this);
                 BuildOrDestroyNest();
             }
         }
@@ -130,7 +127,14 @@ namespace TileSystem
 
         private void BuildOrDestroyNest() 
         {
-            _nest.isNestBuild = isNestBuilt;
+            if (isNestBuilt) 
+            { 
+                building = new Nest(this);
+            }
+            else 
+            {
+                building = new SimpleSpawner(this);
+            }
         }
     }
 }

@@ -6,7 +6,6 @@ public class BorderMetrics
 {
     private TerrainTilemap _tilemap;
     private Dictionary<Vector2Int, TerrainCell> _cells = new();
-    private HexMetrics hexMetrics = new();
     public BorderMetrics()
     {
         _tilemap = GameObject.FindObjectOfType<TerrainTilemap>();
@@ -15,30 +14,38 @@ public class BorderMetrics
     {
         List<Vector3> perim = new();
         Vector2Int footCell = (Vector2Int)_tilemap.GetCellCoordinate(regionCells[0]);
+        Vector2Int handCell = HexMetrics.GetCellByDirection(footCell, CellDirection.top);
         WriteCellToDictionary(regionCells);
 
-        while (_cells.ContainsKey(GetCoordinatesOfNeighboringCells(footCell)[4]))
+        while (_cells.ContainsKey(handCell))
         {
-            footCell = GetCoordinatesOfNeighboringCells(footCell)[4];
+            footCell = handCell;
+            handCell = HexMetrics.GetCellByDirection(footCell, CellDirection.top);
         }
 
-        Vector2Int startHandCell = GetCoordinatesOfNeighboringCells(footCell)[4];
+        Vector2Int startHandCell = handCell;
         Vector2Int startFootCell = footCell;
-        Vector2Int handCell = startHandCell;
 
-        perim.Add(hexMetrics.GetRightBottomVertex(footCell, handCell));
+        perim.Add(HexMetrics.GetRightBottomVertex(footCell, handCell, _cells[footCell].transform));
 
+        int n = 0;
         do
         {
-            if (_cells.ContainsKey(hexMetrics.RotateCellCounterClockwise(handCell, footCell)))
+            n++;
+            if (_cells.ContainsKey(HexMetrics.RotateCellCounterClockwise(handCell, footCell)))
             {
-                footCell = hexMetrics.RotateCellCounterClockwise(handCell, footCell);
+                footCell = HexMetrics.RotateCellCounterClockwise(handCell, footCell);
             }
             else
             {
-                handCell = hexMetrics.RotateCellClockwise(footCell, handCell);
+                handCell = HexMetrics.RotateCellClockwise(footCell, handCell);
             }
-            perim.Add(hexMetrics.GetRightBottomVertex(footCell, handCell));
+            perim.Add(HexMetrics.GetRightBottomVertex(footCell, handCell, _cells[footCell].transform));
+            if (n > 100) 
+            {
+                Debug.Log("InfinitySycle");
+                break;
+            }
         } while ((handCell != startHandCell || footCell != startFootCell));
         return perim;
     }
@@ -49,24 +56,5 @@ public class BorderMetrics
         {
             this._cells.Add((Vector2Int)_tilemap.GetCellCoordinate(cell), cell);
         }
-    }
-    private List<Vector2Int> GetCoordinatesOfNeighboringCells(Vector2Int coordinate)
-    {
-        List<Vector2Int> coordinates = new();
-        coordinates.Add(new Vector2Int(coordinate.x - 1, coordinate.y));
-        coordinates.Add(new Vector2Int(coordinate.x + 1, coordinate.y));
-        coordinates.Add(new Vector2Int(coordinate.x, coordinate.y - 1));
-        coordinates.Add(new Vector2Int(coordinate.x, coordinate.y + 1));
-        if (coordinate.y % 2 == 0)
-        {
-            coordinates.Add(new Vector2Int(coordinate.x - 1, coordinate.y + 1));
-            coordinates.Add(new Vector2Int(coordinate.x - 1, coordinate.y - 1));
-        }
-        else
-        {
-            coordinates.Add(new Vector2Int(coordinate.x + 1, coordinate.y + 1));
-            coordinates.Add(new Vector2Int(coordinate.x + 1, coordinate.y - 1));
-        }
-        return coordinates;
     }
 }

@@ -1,22 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TileSystem;
 using UnityEngine;
 
-public class HexMetrics
+public static class HexMetrics
 {
     public static float sideLength = 0.5f;
-    public float radius = 0.43f; //sideLength * math.sin(60 * math.PI / 180);
+    public static float radius = 0.43f; //sideLength * math.sin(60 * math.PI / 180);
 
-    private TerrainTilemap _ttm;
-
-    public HexMetrics()
-    {
-        _ttm = GameObject.FindObjectOfType<TerrainTilemap>();
-    }
-
-    public List<Vector3> GetCoordinatesOfCellVertex(Transform transform)
+    public static List<Vector3> GetCoordinatesOfCellVertex(Transform transform)
     {
         List<Vector3> coordinates = new List<Vector3>();
         var position = transform.position;
@@ -31,32 +23,13 @@ public class HexMetrics
         return coordinates;
     }
 
-    public List<Vector3> FindCommonVertex(TerrainCell cellA, TerrainCell cellB)
-    {
-        return FindCommonVertex(GetCoordinatesOfCellVertex(cellA.transform), GetCoordinatesOfCellVertex(cellB.transform));
-    }
-    public List<Vector3> FindCommonVertex(List<Vector3> mainCellDots, List<Vector3> neighbouringCellDots)
+    public static List<Vector3> FindCommonVertex(List<Vector3> mainCellDots, List<Vector3> neighbouringCellDots)
     {
         var commonDots = mainCellDots.Intersect(neighbouringCellDots);
         return commonDots.ToList();
     }
 
-    public List<Vector3> GetDotsCoordinatesForBorders(TerrainCell mainCell, TerrainCell neighbouringCell)
-    {
-        List<Vector3> dotsCoordinatesOfMainCell = GetCoordinatesOfCellVertex(mainCell.transform);
-        List<Vector3> dotsCoordinatesOfNeighboursCell = GetCoordinatesOfCellVertex(neighbouringCell.transform);
-        return FindCommonVertex(dotsCoordinatesOfMainCell, dotsCoordinatesOfNeighboursCell);
-
-
-        //List<Vector2> dotsCoordinatesOfNeighbouringCell = _ttm.GetCellNeighbors()
-    }
-
-    public Vector3 GetVertex(Vector2Int coordinate, VertexDirection direction)
-    {
-        return (GetVertex(_ttm.GetCellFromGridCoordinate(coordinate).transform, direction));
-    }
-
-    public Vector3 GetVertex(Transform transform, VertexDirection direction)
+    public static Vector3 GetVertex(Transform transform, VertexDirection direction)
     {
         Vector3 position = transform.transform.position;
         switch (direction)
@@ -78,12 +51,12 @@ public class HexMetrics
         }
     }
 
-    public Vector2Int GetCellByDirection(Vector2Int coordinate, CellDirection direction)
+    public static Vector2Int GetCellByDirection(Vector2Int coordinate, CellDirection direction)
     {
         return coordinate + GetCellNeiborModificator(direction, coordinate);
     }
 
-    public List<Vector2Int> GetCoordinatesOfNeighboringCells(Vector2Int coordinate)
+    public static List<Vector2Int> GetCoordinatesOfNeighboringCells(Vector2Int coordinate)
     {
         List<Vector2Int> coordinates = new();
         coordinates.Add(new Vector2Int(coordinate.x - 1, coordinate.y));
@@ -103,7 +76,7 @@ public class HexMetrics
         return coordinates;
     }
 
-    public Vector2Int RotateCellClockwise(Vector2Int center, Vector2Int turned)
+    public static Vector2Int RotateCellClockwise(Vector2Int center, Vector2Int turned)
     {
         CellDirection displacement = GetRelativeCellPositionBRelativeToA(center, turned);
         if (displacement == CellDirection.rightTop) return GetCellByDirection(center, CellDirection.rightBottom);
@@ -116,7 +89,7 @@ public class HexMetrics
         return GetCellByDirection(center, CellDirection.rightBottom);
     }
 
-    public Vector2Int RotateCellCounterClockwise(Vector2Int center, Vector2Int turned)
+    public static Vector2Int RotateCellCounterClockwise(Vector2Int center, Vector2Int turned)
     {
         CellDirection displacement = GetRelativeCellPositionBRelativeToA(center, turned);
         if (displacement == CellDirection.rightTop) return GetCellByDirection(center, CellDirection.top);
@@ -129,7 +102,7 @@ public class HexMetrics
         return GetCellByDirection(center, CellDirection.rightBottom);
     }
 
-    public CellDirection GetRelativeCellPositionBRelativeToA(Vector2Int a, Vector2Int b)
+    public static CellDirection GetRelativeCellPositionBRelativeToA(Vector2Int a, Vector2Int b)
     {
         Vector2Int displacement = b - a;
 
@@ -152,7 +125,7 @@ public class HexMetrics
         throw new Exception("Incorrect Input");
     }
 
-    public Vector2Int GetCellNeiborModificator(CellDirection direction, Vector2Int coordinate)
+    public static Vector2Int GetCellNeiborModificator(CellDirection direction, Vector2Int coordinate)
     {
         int x = 0;
         int y = 0;
@@ -190,15 +163,15 @@ public class HexMetrics
         return new Vector2Int(x, y);
     }
 
-    public Vector3 GetRightBottomVertex(Vector2Int a, Vector2Int b)
+    public static Vector3 GetRightBottomVertex(Vector2Int a, Vector2Int b, Transform cellTransform)
     {
         CellDirection displacement = GetRelativeCellPositionBRelativeToA(a, b);
-        if (displacement == CellDirection.rightTop) return GetVertex(a, VertexDirection.right);
-        if (displacement == CellDirection.rightBottom) return GetVertex(a, VertexDirection.rightBottom);
-        if (displacement == CellDirection.bottom) return GetVertex(a, VertexDirection.leftBottom);
-        if (displacement == CellDirection.leftBottom) return GetVertex(a, VertexDirection.left);
-        if (displacement == CellDirection.leftTop) return GetVertex(a, VertexDirection.leftTop);
-        if (displacement == CellDirection.top) return GetVertex(a, VertexDirection.rightTop);
+        if (displacement == CellDirection.rightTop) return GetVertex(cellTransform, VertexDirection.right);
+        if (displacement == CellDirection.rightBottom) return GetVertex(cellTransform, VertexDirection.rightBottom);
+        if (displacement == CellDirection.bottom) return GetVertex(cellTransform, VertexDirection.leftBottom);
+        if (displacement == CellDirection.leftBottom) return GetVertex(cellTransform, VertexDirection.left);
+        if (displacement == CellDirection.leftTop) return GetVertex(cellTransform, VertexDirection.leftTop);
+        if (displacement == CellDirection.top) return GetVertex(cellTransform, VertexDirection.rightTop);
         throw new Exception("Incorrect input");
     }
 }

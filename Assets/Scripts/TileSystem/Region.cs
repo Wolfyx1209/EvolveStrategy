@@ -9,6 +9,7 @@ namespace TileSystem
         private List<TerrainCell> _regionCells = new();
 
         public bool isNestInRegion;
+        private bool isRegionControledOnePlayer;
 
         private GameObject _regionView;
         private NestBuildView _buildView;
@@ -17,11 +18,18 @@ namespace TileSystem
 
         public bool isFade = true;
 
-        public Region() 
+        public Region(List<TerrainCell> regionCells) 
         {
+            _regionCells = regionCells;
             _regionView = new GameObject("RegionView");
             _regionView.transform.SetParent(GameObject.FindGameObjectWithTag("GUICanvas").transform, false);
             _regionView.AddComponent<RectTransform>();
+            foreach(TerrainCell cell in _regionCells) 
+            {
+                cell.region = this;
+                isNestInRegion |= cell.isNestBuilt;
+                FindSubRegionForCell(cell);
+            }
         }
 
         public void AddCell(TerrainCell cell) 
@@ -34,22 +42,13 @@ namespace TileSystem
             }
         }
 
-        [System.Obsolete]
         public void DrawRegionBoundes() 
         {
-            //Color color = Random.ColorHSV();
-            //foreach(TerrainCell cell in _regionCells) 
-            //{
-            //    cell.ChangeColorTo(color);
-            //}
-            //List<Vector3> vector3s = hm.GetCoordinatesOfCell();
-
-            BorderMetrics bm = new();
-            List<Vector3> vector3s = bm.GetRegionBorder(_regionCells);
+            List<Vector3> vector3s = new BorderMetrics().GetRegionBorder(_regionCells);
             GameObject go = (GameObject)Object.Instantiate(Resources.Load("ViewElements/RegionBorder"));
             go.transform.SetParent(_regionView.transform);
             LineRenderer lr = go.GetComponent<LineRenderer>();
-            lr.numPositions = vector3s.Count;
+            lr.positionCount = vector3s.Count;
             lr.SetPositions(vector3s.ToArray());
         }
 
@@ -71,15 +70,6 @@ namespace TileSystem
             isFade = true;
         }
 
-        private SubRegionView CreateNewSubViewElement() 
-        {
-            GameObject newViewObject = Object.Instantiate(Resources.Load<GameObject>("ViewElements/SubRegionView"));
-            newViewObject.transform.SetParent(_regionView.transform, false);
-            SubRegionView view = newViewObject.GetComponent<SubRegionView>();
-            view.OnCellChangeOwner += FindSubRegionForCell;
-            view.OnCellChangeOwner += NotifyIfRegionContloledOnePlayer;
-            return view;
-        }
 
         private void FindSubRegionForCell(TerrainCell cell) 
         {
@@ -93,15 +83,37 @@ namespace TileSystem
                 _views[cell.owner].AddCell(cell);
             }
         }
-        private void NotifyIfRegionContloledOnePlayer(TerrainCell cell) 
+
+        private SubRegionView CreateNewSubViewElement()
+        {
+            GameObject newViewObject = Object.Instantiate(Resources.Load<GameObject>("ViewElements/SubRegionView"));
+            newViewObject.transform.SetParent(_regionView.transform, false);
+            SubRegionView view = newViewObject.GetComponent<SubRegionView>();
+            view.OnCellChangeOwner += FindSubRegionForCell;
+            view.OnCellChangeOwner += NotifyIfRegionControlStatusChanged;
+            view.OnEmptyView += DeleteEmptySubViewElement;
+            return view;
+        }
+
+        private void DeleteEmptySubViewElement(PlayersList owner)
+        {
+            Object.Destroy(_views[owner]);
+            _views.Remove(owner);
+        }
+
+        private void NotifyIfRegionControlStatusChanged(TerrainCell cell) 
         { 
-            if(IsOnePlayerControlRegion() && !isNestInRegion) 
+            if(IsOnePlayerControlRegion()) 
             {
-                EventBus.RaiseEvent<IRegionControleOnePlayerHandler>(it => it.RegionControlOnePlayer(this, cell.owner));
-                if(cell.owner == PlayersList.Player) 
+                EventBus.RaiseEvent<IRegionOwnershipStatusChangedHandler>(it => it.RegionControledBySinglePlayer(this, cell.owner));
+                if(cell.owner == PlayersList.Player && !isNestInRegion) 
                 {
                     ShowNestBuildingViewForPlayer();
                 }
+            }
+            else if (isRegionControledOnePlayer) 
+            {
+                HideNestBuildingViewForPlayer();
             }
         }
         private bool IsOnePlayerControlRegion() 
@@ -123,7 +135,12 @@ namespace TileSystem
             viewObject.transform.position = CalculateCenter();
             _buildView = viewObject.GetComponent<NestBuildView>();
             _buildView.OnClick += PlayerClickedOnNestBuildButton;
+        }
 
+        private void HideNestBuildingViewForPlayer()
+        {
+            EventBus.RaiseEvent<IPlayerChoosesNestCellHandler>(it => it.EndState(this));
+            Object.Destroy(_buildView);
         }
 
         private void PlayerClickedOnNestBuildButton() 

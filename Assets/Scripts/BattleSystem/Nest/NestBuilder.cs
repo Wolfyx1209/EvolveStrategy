@@ -5,7 +5,7 @@ using EventBusSystem;
 
 namespace BattleSystem 
 { 
-    public class NestBuilder : IRegionControleOnePlayerHandler
+    public class NestBuilder : IRegionOwnershipStatusChangedHandler
     {
         private List<Region> _avalibleForNestBuilding = new();
 
@@ -14,11 +14,19 @@ namespace BattleSystem
             EventBus.Subscribe(this);
         }
 
-        public void RegionControlOnePlayer(Region region, PlayersList owner)
+        public void RegionControledBySinglePlayer(Region region, PlayersList owner)
         {
             if (!_avalibleForNestBuilding.Contains(region) && !region.isNestInRegion) 
             { 
                 _avalibleForNestBuilding.Add(region);
+            }
+        }
+
+        public void RegionNoLongerControlledBySinglePlayer(Region region)
+        {
+            if (_avalibleForNestBuilding.Contains(region)) 
+            { 
+                _avalibleForNestBuilding.Remove(region);
             }
         }
 
