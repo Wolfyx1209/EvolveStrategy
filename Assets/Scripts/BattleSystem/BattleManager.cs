@@ -39,13 +39,13 @@ namespace BattleSystem
 
         public void TryGiveOrderToAttackHalfUnit(TerrainCell from, TerrainCell to) 
         {
-            if(Is—onditions—orrect(from, to))
+            if(IsConditionsCorrect(from, to))
                 GiveOrderToAttack(from, to, from.unitNumber / 2);
         }
 
         public void TryGiveOrderToAttackAllUnit(TerrainCell from, TerrainCell to)
         {
-            if (Is—onditions—orrect(from, to))
+            if (IsConditionsCorrect(from, to))
                 GiveOrderToAttack(from, to, from.unitNumber);
         }
         private void GiveOrderToAttack(TerrainCell from, TerrainCell to, int unitsSent)
@@ -61,7 +61,7 @@ namespace BattleSystem
 
         public void RightSwipe(Vector3 swipeStartPosition, Vector3 swipeEndPosition)
         {
-            if (Is—onditions—orrect(swipeStartPosition, swipeEndPosition))
+            if (IsConditionsCorrect(swipeStartPosition, swipeEndPosition))
             {
                 TerrainCell from = _terrainTilemap.GetTile(swipeStartPosition);
                 TerrainCell to = _terrainTilemap.GetTile(swipeEndPosition);
@@ -70,7 +70,7 @@ namespace BattleSystem
         }
         public void LeftSwipe(Vector3 swipeStartPosition, Vector3 swipeEndPosition)
         {
-            if(Is—onditions—orrect(swipeStartPosition, swipeEndPosition)) 
+            if(IsConditionsCorrect(swipeStartPosition, swipeEndPosition)) 
             {
                 TerrainCell from = _terrainTilemap.GetTile(swipeStartPosition);
                 TerrainCell to = _terrainTilemap.GetTile(swipeEndPosition);
@@ -78,7 +78,7 @@ namespace BattleSystem
             }
         }
 
-        private bool Is—onditions—orrect(TerrainCell from, TerrainCell to)
+        private bool IsConditionsCorrect(TerrainCell from, TerrainCell to)
         {
             if (_terrainTilemap.isCellsNeighbours(to, from) && from.unitNumber >= 1)
             {
@@ -86,14 +86,14 @@ namespace BattleSystem
             }
             return false;
         }
-        private bool Is—onditions—orrect(Vector3 cellA, Vector3 cellB) 
+        private bool IsConditionsCorrect(Vector3 cellA, Vector3 cellB) 
         {
             if (_terrainTilemap.ContainTile(cellA)
                 && _terrainTilemap.ContainTile(cellB))
             {
                 TerrainCell from = _terrainTilemap.GetTile(cellA);
                 TerrainCell to = _terrainTilemap.GetTile(cellB);
-                return Is—onditions—orrect(from, to);
+                return IsConditionsCorrect(from, to);
             }
             return false;
         }
