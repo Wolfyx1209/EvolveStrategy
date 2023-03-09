@@ -4,7 +4,7 @@ namespace BattleSystem
 {
     public class Unit
     {
-        public Unit(PlayersList owner)
+        public Unit(GameAcktor owner)
         {
             this.owner = owner;
             _attack = 10;
@@ -23,7 +23,7 @@ namespace BattleSystem
         private float _heatResistance;
         private float _poisonResistance;
 
-        public PlayersList owner;
+        public GameAcktor owner;
 
         public int attack
         {

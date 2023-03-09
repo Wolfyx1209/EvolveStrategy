@@ -56,7 +56,7 @@ namespace TileSystem
             return new Vector2Int(gridPosition.x, gridPosition.y);
         }
 
-        public List<TerrainCell> GetAllCellsOfOnePlayer(PlayersList player)
+        public List<TerrainCell> GetAllCellsOfOnePlayer(GameAcktor player)
         {
             List<TerrainCell> cellsOfOnePlayer = new();
             foreach (TerrainCell cell in _terrainTilemap.Values) 

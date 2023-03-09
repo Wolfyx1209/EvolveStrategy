@@ -10,7 +10,7 @@ public class SimpleSpawner : ICellBased
     public SimpleSpawner(TerrainCell cell)
     {
         _cell = cell;
-        _unit = PlayersUnits.instance.GetUnit(_cell.owner);
+        _unit = cell.owner.unit;
         StartTimerToSpawnUnit();
     }
     ~SimpleSpawner()

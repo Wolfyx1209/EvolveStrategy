@@ -32,7 +32,7 @@ namespace BattleSystem
             return progress;
         }
 
-        public PlayersList GetAttackingPlayer() 
+        public GameAcktor GetAttackingPlayer() 
         {
             return _unit.owner;
         }

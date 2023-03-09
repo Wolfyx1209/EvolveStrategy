@@ -19,7 +19,7 @@ public class OrderDrawer : MonoBehaviour
         GameObject newArrow = Instantiate(_aroow, position, rotation, _parent);
 
         ArrowView View= newArrow.GetComponent<ArrowView>();
-        View.InstanceColor(_colors.GetColor(comand.GetAttackingPlayer()));
+        View.InstanceColor(_colors.GetColor(comand.GetAttackingPlayer().acktorName));
         arrows.Add(comand, View);
     }
 

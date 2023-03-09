@@ -10,7 +10,7 @@ public class SubRegionView : MonoBehaviour
     public delegate void CellChangeOwner(TerrainCell cell);
     public event CellChangeOwner OnCellChangeOwner;
 
-    public delegate void EmptyView(PlayersList owner);
+    public delegate void EmptyView(GameAcktor owner);
     public event EmptyView OnEmptyView;
 
     private TextMeshProUGUI _unitsNumberTxt =>
@@ -24,7 +24,7 @@ public class SubRegionView : MonoBehaviour
     [SerializeField]private int _unitNumber;
     private int _foodNumber;
     private bool _isNestBuilt;
-    private PlayersList _owner;
+    private GameAcktor _owner;
 
     private bool _isShowen = true;
     private int unitNumber
@@ -48,7 +48,7 @@ public class SubRegionView : MonoBehaviour
             UpdateNestView(); }
     }
 
-    private PlayersList owner
+    private GameAcktor owner
     {
         get => _owner;
         set { _owner = value;
@@ -113,11 +113,11 @@ public class SubRegionView : MonoBehaviour
         if (!_cells.Contains(cell))
         {
             SubscribeToAllChangeIvennts(cell);
-            _cells.Add(cell);
             if (_cells.Count == 0)
             {
                 owner = cell.owner;
             }
+            _cells.Add(cell);
             unitNumber += cell.unitNumber;
             foodNumber += cell.foodNumber;
             isNestBuilt |= cell.isNestBuilt;
@@ -158,7 +158,7 @@ public class SubRegionView : MonoBehaviour
     private void UpdateUnitView()
     {
         _unitsNumberTxt.text = unitNumber.ToString();
-        Color ownerColor = new PlayersColors().GetColor(_cells[0].owner);
+        Color ownerColor = new PlayersColors().GetColor(_cells[0].owner.acktorName);
         ownerColor.a = _isShowen ? 1 :0 ;
         _unitsNumberTxt.faceColor = ownerColor;
     }
@@ -210,7 +210,7 @@ public class SubRegionView : MonoBehaviour
         cell.OnNestConditionChenge -= ChangeNestCondition;
         cell.OnFoodNumberChenge -= ChangeFoodNumber;
     }
-    private void ChangeOwner(PlayersList previousOwner, PlayersList newOwner, TerrainCell cell)
+    private void ChangeOwner(GameAcktor previousOwner, GameAcktor newOwner, TerrainCell cell)
     {
         if(newOwner!= owner) 
         {

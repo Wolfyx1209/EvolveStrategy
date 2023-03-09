@@ -6,7 +6,7 @@ namespace TileSystem
     public class TerrainCell : MonoBehaviour
     {
         #region Events
-        public delegate void OwnerChenge(PlayersList previousOwner, PlayersList newOwner, TerrainCell cell);
+        public delegate void OwnerChenge(GameAcktor previousOwner, GameAcktor newOwner, TerrainCell cell);
         public event OwnerChenge OnOwnerChenge;
 
         public delegate void UnitNumberChenge(int previousNumber, int newNumber, TerrainCell cell);
@@ -26,7 +26,7 @@ namespace TileSystem
 
         private bool _isShowen;
         private ICellBased building;
-        [SerializeField] private PlayersList _owner;
+        [SerializeField] private GameAcktor _owner;
         [SerializeField] private int _unitNumber;
         [SerializeField] private int _foodNumber;
         [SerializeField] private bool _isNestBuilt;
@@ -36,12 +36,12 @@ namespace TileSystem
             get => _region;
             set { _region = value; } 
         }
-        public PlayersList owner
+        public GameAcktor owner
         {
             get => _owner;
             set 
             {
-                PlayersList previousOwner = _owner;
+                GameAcktor previousOwner = _owner;
                 _owner = value;
                 BuildOrDestroyNest();
                 EventBus.RaiseEvent<ICellChangeOwnerHandler>(it => it.ChangeOwner(previousOwner, value, this));
@@ -83,9 +83,13 @@ namespace TileSystem
 
         private void Awake()
         {
+            if(_owner == null) 
+            {
+                _owner = FindObjectOfType<NoneAcktor>();
+            }
             UpdateNestView();
             UpdateUnitView();
-            if(_owner != PlayersList.None) 
+            if(_owner.acktorName != PlayersList.None) 
             {
                 building = new SimpleSpawner(this);
                 BuildOrDestroyNest();
@@ -112,7 +116,7 @@ namespace TileSystem
         }
         private void UpdateUnitView() 
         {
-            view.UpdateUnitView(_unitNumber, _owner, _isShowen);
+            view.UpdateUnitView(_unitNumber, _owner.acktorName, _isShowen);
         }
 
         private void UpdateNestView() 

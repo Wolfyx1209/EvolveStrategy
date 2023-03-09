@@ -4,7 +4,7 @@ namespace EventBusSystem
 {
     public interface ICellChangeOwnerHandler : IGlobalSubscriber
     {
-        public void ChangeOwner(PlayersList previousOwner, PlayersList newOwner, TerrainCell cell);
+        public void ChangeOwner(GameAcktor previousOwner, GameAcktor newOwner, TerrainCell cell);
     }
 }
 

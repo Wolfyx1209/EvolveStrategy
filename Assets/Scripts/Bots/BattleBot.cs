@@ -5,7 +5,7 @@ using TileSystem;
 using BattleSystem;
 using EventBusSystem;
 
-public class BattleBot : MonoBehaviour, ICellChangeOwnerHandler
+public class BattleBot : GameAcktor, ICellChangeOwnerHandler
 {
     private TerrainTilemap _tilemap;
     private BattleManager _battleManager;
@@ -15,11 +15,12 @@ public class BattleBot : MonoBehaviour, ICellChangeOwnerHandler
     [SerializeField] private PlayersList _me;
     [SerializeField] private float TimeToOneTurn;
 
-    private void Start()
+    private new void Awake()
     {
+        base.Awake();
         _tilemap = FindObjectOfType<TerrainTilemap>();
         _battleManager = BattleManager.instance;
-        _myCells = _tilemap.GetAllCellsOfOnePlayer(_me);
+        _myCells = _tilemap.GetAllCellsOfOnePlayer(this);
         EventBus.Subscribe(this);
 
         StartCoroutine(AnalysisSituationAndMakeTurn());
@@ -45,7 +46,7 @@ public class BattleBot : MonoBehaviour, ICellChangeOwnerHandler
         TerrainCell enemyMaxCell = null;
         foreach (TerrainCell currentCell in cellToAnalysis) 
         { 
-            if(currentCell.owner == _me) 
+            if(currentCell.owner == this) 
             { 
                 if(friendMaxCell == null)
                 { 
@@ -78,7 +79,7 @@ public class BattleBot : MonoBehaviour, ICellChangeOwnerHandler
         {
             if(enemyMinCell.unitNumber < cell.unitNumber) 
             {
-                _battleManager.TryGiveOrderToAttackAllUnit(cell, enemyMinCell);
+                _battleManager.TryGiveOrderToAttackAllUnit(cell, enemyMinCell, this);
                 return;
             }
         }
@@ -93,20 +94,26 @@ public class BattleBot : MonoBehaviour, ICellChangeOwnerHandler
         { 
             if(cell.unitNumber > 10 && cell.unitNumber < friendMaxCell.unitNumber) 
             {
-                _battleManager.TryGiveOrderToAttackHalfUnit(cell, friendMaxCell);
+                _battleManager.TryGiveOrderToAttackHalfUnit(cell, friendMaxCell, this);
             }
         }
     }
 
-    public void ChangeOwner(PlayersList previousOwner, PlayersList newOwner, TerrainCell cell)
+    public void ChangeOwner(GameAcktor previousOwner, GameAcktor newOwner, TerrainCell cell)
     {
-        if(previousOwner == _me && _myCells.Contains(cell)) 
+        if(previousOwner == this && _myCells.Contains(cell)) 
         { 
             _myCells.Remove(cell);
         }
-        if(newOwner == _me && !_myCells.Contains(cell)) 
+        if(newOwner == this && !_myCells.Contains(cell)) 
         { 
             _myCells.Add(cell);
         }
+    }
+
+
+    public override void OfferToBuildNest(Region region)
+    {
+        throw new System.NotImplementedException();
     }
 }

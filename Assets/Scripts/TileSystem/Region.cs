@@ -14,7 +14,7 @@ namespace TileSystem
         private GameObject _regionView;
         private NestBuildView _buildView;
 
-        private Dictionary<PlayersList, SubRegionView> _views = new();
+        private Dictionary<GameAcktor, SubRegionView> _views = new();
 
         public bool isFade = true;
 
@@ -30,6 +30,7 @@ namespace TileSystem
                 isNestInRegion |= cell.isNestBuilt;
                 FindSubRegionForCell(cell);
             }
+            DrawRegionBoundes();
         }
 
         public void AddCell(TerrainCell cell) 
@@ -54,7 +55,7 @@ namespace TileSystem
 
         public void ShowCellsInfo() 
         {
-            foreach (KeyValuePair<PlayersList, SubRegionView> pair in _views)
+            foreach (KeyValuePair<GameAcktor, SubRegionView> pair in _views)
             {
                 pair.Value.ShowCellsInfo();
             }
@@ -63,7 +64,7 @@ namespace TileSystem
 
         public void HideCellsInfo() 
         {
-            foreach(KeyValuePair<PlayersList, SubRegionView> pair in _views) 
+            foreach(KeyValuePair<GameAcktor, SubRegionView> pair in _views) 
             {
                 pair.Value.HideCellsInfo();
             }
@@ -95,9 +96,9 @@ namespace TileSystem
             return view;
         }
 
-        private void DeleteEmptySubViewElement(PlayersList owner)
+        private void DeleteEmptySubViewElement(GameAcktor owner)
         {
-            Object.Destroy(_views[owner]);
+            Object.Destroy(_views[owner].gameObject);
             _views.Remove(owner);
         }
 
@@ -106,7 +107,7 @@ namespace TileSystem
             if(IsOnePlayerControlRegion()) 
             {
                 EventBus.RaiseEvent<IRegionOwnershipStatusChangedHandler>(it => it.RegionControledBySinglePlayer(this, cell.owner));
-                if(cell.owner == PlayersList.Player && !isNestInRegion) 
+                if(cell.owner.acktorName == PlayersList.Player && !isNestInRegion) 
                 {
                     ShowNestBuildingViewForPlayer();
                 }
@@ -118,7 +119,7 @@ namespace TileSystem
         }
         private bool IsOnePlayerControlRegion() 
         {
-            PlayersList owner = _regionCells[0].owner;
+            GameAcktor owner = _regionCells[0].owner;
             foreach(TerrainCell cell in _regionCells) 
             { 
                 if(cell.owner != owner) 

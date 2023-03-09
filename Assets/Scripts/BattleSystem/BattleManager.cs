@@ -5,52 +5,59 @@ using UnityEngine;
 
 namespace BattleSystem
 {
-    public class BattleManager : Singletone<BattleManager>, ISwipeHandler, IClickHandler
+    public class BattleManager : Singletone<BattleManager>
     {
         private OrderDrawer _orderDrawer;
 
         private TerrainTilemap _terrainTilemap;
 
-        private NestBuilder _nestBuilder;
-
         private List<IComand> _comandList = new();
 
-        private PlayersUnits _playersUnits;
-
         private const float DEFAULT_TIME_TO_ATTACK   = 4f;
-
-        private void Awake()
-        {
-            _playersUnits = PlayersUnits.instance;
-        }
 
         private void OnEnable()
         {
             if (_orderDrawer == null) _orderDrawer = FindObjectOfType<OrderDrawer>();
             if(_terrainTilemap == null) _terrainTilemap = FindObjectOfType<TerrainTilemap>();
-            if (_nestBuilder == null) _nestBuilder = new NestBuilder();
-            EventBus.Subscribe(this);
         }
 
         private void OnDisable()
         {
-            EventBus.Unsubscribe(this);
         }
 
-        public void TryGiveOrderToAttackHalfUnit(TerrainCell from, TerrainCell to) 
+        public void TryGiveOrderToAttackHalfUnit(Vector3 from, Vector3 to, GameAcktor acktor)
         {
-            if(IsConditionsCorrect(from, to))
+            if (IsConditionsCorrect(from, to, acktor)) 
+            {
+                TerrainCell fromCell = _terrainTilemap.GetTile(from);
+                TerrainCell toCell = _terrainTilemap.GetTile(to);
+                TryGiveOrderToAttackHalfUnit(fromCell, toCell, acktor);
+            }
+        }
+        public void TryGiveOrderToAttackHalfUnit(TerrainCell from, TerrainCell to, GameAcktor acktor) 
+        {
+            if(IsConditionsCorrect(from, to, acktor))
                 GiveOrderToAttack(from, to, from.unitNumber / 2);
         }
 
-        public void TryGiveOrderToAttackAllUnit(TerrainCell from, TerrainCell to)
+        public void TryGiveOrderToAttackAllUnit(Vector3 from, Vector3 to, GameAcktor acktor)
         {
-            if (IsConditionsCorrect(from, to))
+            if (IsConditionsCorrect(from, to, acktor))
+            {
+                TerrainCell fromCell = _terrainTilemap.GetTile(from);
+                TerrainCell toCell = _terrainTilemap.GetTile(to);
+                TryGiveOrderToAttackAllUnit(fromCell, toCell, acktor);
+            }
+        }
+
+        public void TryGiveOrderToAttackAllUnit(TerrainCell from, TerrainCell to, GameAcktor acktor)
+        {
+            if (IsConditionsCorrect(from, to, acktor))
                 GiveOrderToAttack(from, to, from.unitNumber);
         }
         private void GiveOrderToAttack(TerrainCell from, TerrainCell to, int unitsSent)
         {
-            Unit attackingUnit = _playersUnits.GetUnit(from.owner);
+            Unit attackingUnit = from.owner.unit;
             AttackCell attackCell = new(to, attackingUnit, unitsSent , DEFAULT_TIME_TO_ATTACK * attackingUnit.moveSpeed);
             from.unitNumber -= unitsSent;
             attackCell.OnAttackEnd += ChoseBattleSituation;
@@ -59,41 +66,22 @@ namespace BattleSystem
             _orderDrawer.NewComand(from.transform.position, to.transform.position, attackCell);
         }
 
-        public void RightSwipe(Vector3 swipeStartPosition, Vector3 swipeEndPosition)
+        private bool IsConditionsCorrect(TerrainCell from, TerrainCell to, GameAcktor acktor)
         {
-            if (IsConditionsCorrect(swipeStartPosition, swipeEndPosition))
-            {
-                TerrainCell from = _terrainTilemap.GetTile(swipeStartPosition);
-                TerrainCell to = _terrainTilemap.GetTile(swipeEndPosition);
-                TryGiveOrderToAttackHalfUnit(from, to);
-            }
-        }
-        public void LeftSwipe(Vector3 swipeStartPosition, Vector3 swipeEndPosition)
-        {
-            if(IsConditionsCorrect(swipeStartPosition, swipeEndPosition)) 
-            {
-                TerrainCell from = _terrainTilemap.GetTile(swipeStartPosition);
-                TerrainCell to = _terrainTilemap.GetTile(swipeEndPosition);
-                TryGiveOrderToAttackAllUnit(from, to);
-            }
-        }
-
-        private bool IsConditionsCorrect(TerrainCell from, TerrainCell to)
-        {
-            if (_terrainTilemap.isCellsNeighbours(to, from) && from.unitNumber >= 1)
+            if (_terrainTilemap.isCellsNeighbours(to, from) && from.unitNumber >= 1 && from.owner == acktor)
             {
                 return true;
             }
             return false;
         }
-        private bool IsConditionsCorrect(Vector3 cellA, Vector3 cellB) 
+        private bool IsConditionsCorrect(Vector3 cellA, Vector3 cellB, GameAcktor acktor) 
         {
             if (_terrainTilemap.ContainTile(cellA)
                 && _terrainTilemap.ContainTile(cellB))
             {
                 TerrainCell from = _terrainTilemap.GetTile(cellA);
                 TerrainCell to = _terrainTilemap.GetTile(cellB);
-                return IsConditionsCorrect(from, to);
+                return IsConditionsCorrect(from, to, acktor);
             }
             return false;
         }
@@ -113,7 +101,7 @@ namespace BattleSystem
 
         private void IntatiateBattle(TerrainCell cell, int attackUnitCount, Unit attackUnit)
         {
-            Unit defanceUnit = _playersUnits.GetUnit(cell.owner);
+            Unit defanceUnit = cell.owner.unit;
 
             int defanceUnitCount = cell.unitNumber;
             while(defanceUnitCount > 0 && attackUnitCount > 0) 
@@ -142,22 +130,6 @@ namespace BattleSystem
         private void RemoveComand(IComand comand)
         {
             _comandList.Remove(comand);
-        }
-
-        public void RightClick(Vector3 position)
-        {
-
-        }
-
-        public void LeftClick(Vector3 position)
-        {
-            if (_terrainTilemap.ContainTile(position)) 
-            {
-                if (_nestBuilder.TryBuildNest(_terrainTilemap.GetTile(position))) 
-                {
-                    EventBus.RaiseEvent<IPlayerChoosesNestCellHandler>(it => it.EndState(_terrainTilemap.GetTile(position).region));
-                }
-            }
         }
     }
 }

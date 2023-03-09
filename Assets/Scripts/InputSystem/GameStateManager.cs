@@ -2,34 +2,30 @@ using UnityEngine;
 using EventBusSystem;
 using TileSystem;
 
-[RequireComponent(typeof(ClickDetection), typeof(SwipeDetection), typeof(RegionShower))] 
-public class GameStateManager : MonoBehaviour, IPlayerChoosesNestCellHandler
+public class GameStateManager : Singletone<GameStateManager>, IPlayerChoosesNestCellHandler
 {
-    private IGameState currentState;
+    public GameStates currentState { get; private set; }
 
     public void StartState(Region region)
     {
-        ChangeCurrentState(new GameStateNestCellChoses());
+        ChangeCurrentState(GameStates.NestCellChoses);
     }
     public void EndState(Region region) 
     {
-        ChangeCurrentState(new GameStateBattle());
+        ChangeCurrentState(GameStates.Battle);
     }
 
     private void Awake()
     {
-        currentState = new GameStateBattle();
-        currentState.Entry(gameObject);
+        currentState = GameStates.Battle;
         EventBus.Subscribe(this);
     }
 
-    private void ChangeCurrentState(IGameState newState)
+    private void ChangeCurrentState(GameStates newState)
     {
         if(currentState != newState) 
         {
-            currentState.Exit(gameObject);
             currentState = newState;
-            currentState.Entry(gameObject);
         }
     }
 }

@@ -3,6 +3,6 @@ namespace BattleSystem
 {
     public interface IAttackComand : IComand
     {
-        public PlayersList GetAttackingPlayer();
+        public GameAcktor GetAttackingPlayer();
     }
 }
