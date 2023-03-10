@@ -20,10 +20,8 @@ public class SubRegionView : MonoBehaviour
 
     private List<TerrainCell> _cells = new();
 
-    private ViewFaider faider;
+    private ViewFaider _faider;
 
-    [SerializeField] private float _fadeInDuration = 0.5f;
-    [SerializeField] private float _fadeOutDuration = 0.5f;
     [SerializeField] private int _unitNumber;
     private int _foodNumber;
     private bool _isNestBuilt;
@@ -56,7 +54,7 @@ public class SubRegionView : MonoBehaviour
         set
         {
             _isNestBuilt = value;
-            UpdateNestView();
+            UpdateNestView(value);
         }
     }
 
@@ -66,14 +64,14 @@ public class SubRegionView : MonoBehaviour
         set
         {
             _owner = value;
-            UpdateOwnerView();
+            UpdateUnitView();
         }
     }
 
 
     private void Awake()
     {
-        faider = new();
+        _faider = new();
         transform.transform.localScale =
             gameObject.GetComponentInParent<Transform>().localScale;
     }
@@ -153,62 +151,32 @@ public class SubRegionView : MonoBehaviour
     private void HideGeneralInfo()
     {
         _isShowen = false;
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            if (transform.GetChild(i).TryGetComponent(out Image image))
-            {
-                faider.FadeOut(image, _fadeOutDuration);
-            }
-            if (transform.GetChild(i).TryGetComponent(out TextMeshProUGUI text))
-            {
-                faider.FadeOut(text, _fadeOutDuration);
-            }
-        }
+        _faider.FadeOutAllView(transform);
     }
     private void ShowGeneralInfo()
     {
         _isShowen = true;
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            if (transform.GetChild(i).TryGetComponent(out Image image))
-            {
-                faider.FadeIn(image, _fadeOutDuration);
-            }
-            if (transform.GetChild(i).TryGetComponent(out TextMeshProUGUI text))
-            {
-                faider.FadeIn(text, _fadeOutDuration);
-            }
-        }
+        _faider.FadeInAllView(transform);
     }
 
     private void UpdateUnitView()
     {
         _unitsNumberTxt.text = unitNumber.ToString();
-        Color ownerColor = new PlayersColors().GetColor(_cells[0].owner.acktorName);
-        ownerColor.a = _isShowen ? 1 : 0;
-        _unitsNumberTxt.faceColor = ownerColor;
+        Color ownerColor = new PlayersColors().GetColor(_owner.acktorName);
+        _unitsNumberTxt.faceColor = new Color(ownerColor.r, ownerColor.g, ownerColor.b, _unitsNumberTxt.faceColor.a);
     }
 
-    private void UpdateNestView()
+    private void UpdateNestView(bool isBuilt)
     {
-        if (_isShowen)
-        {
-            Color col = _nestIcon.color;
-            col.a = isNestBuilt ? 1 : 0;
-            _nestIcon.color = col;
-        }
+        _nestIcon.enabled = isBuilt;
+        Color col = _nestIcon.color;
+        col.a = _isShowen ? 1 : 0;
+        _nestIcon.color = col;
     }
 
     private void UpdateFoodView()
     {
 
-    }
-
-    private void UpdateOwnerView()
-    {
-        Color col = _nestIcon.color;
-        col.a = isNestBuilt ? 1 : 0;
-        _nestIcon.color = col;
     }
 
     private Vector3 CalculateCenter()

@@ -111,7 +111,7 @@ namespace TileSystem
         }
 
         public void ShowView() 
-        {
+        {           
             _isShowen = true;
             view.ShowView(_isNestBuilt);
             ChangeColorTo(Color.white);

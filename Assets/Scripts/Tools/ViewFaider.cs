@@ -1,85 +1,116 @@
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class ViewFaider
 {
-    public void FadeIn(Image image, float duration)
-    {
-        Coroutines.StartRoutine(fadeIn(image, duration));
-    }
-    public void FadeOut(Image image, float duration)
-    {
-        Coroutines.StartRoutine(fadeOut(image, duration));
-    }
+    private float _fadeInDuration = 0.5f;
+    private float _fadeOutDuration = 0.5f;
 
-    public void FadeIn(TextMeshProUGUI text, float duration)
+    List<IEnumerator> _running—oroutines = new();
+    public void FadeInAllView(Transform transform)
     {
-        Coroutines.StartRoutine(fadeIn(text, duration));
-    }
-    public void FadeOut(TextMeshProUGUI text, float duration)
-    {
-        Coroutines.StartRoutine(fadeOut(text, duration));
-    }
-
-    IEnumerator fadeOut(Image MyRenderer, float duration)
-    {
-        float counter = 0;
-        Color spriteColor = MyRenderer.material.color;
-
-        while (counter < duration)
+        StopRunningCoroutines();
+        for (int i = 0; i < transform.childCount; i++)
         {
-            counter += Time.deltaTime;
-            float alpha = Mathf.Lerp(1, 0, counter / duration);
-
-            MyRenderer.color = new Color(spriteColor.r, spriteColor.g, spriteColor.b, alpha);
-            yield return null;
+            if (transform.GetChild(i).TryGetComponent(out Image image))
+            {
+                Coroutines.StartRoutine(fadeIn(image));
+            }
+            if (transform.GetChild(i).TryGetComponent(out TextMeshProUGUI text))
+            {
+                Coroutines.StartRoutine(fadeIn(text));
+            }
+        }
+    }
+    public void FadeOutAllView(Transform transform)
+    {
+        StopRunningCoroutines();
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            if (transform.GetChild(i).TryGetComponent(out Image image))
+            {
+                Coroutines.StartRoutine(fadeOut(image));
+            }
+            if (transform.GetChild(i).TryGetComponent(out TextMeshProUGUI text))
+            {
+                Coroutines.StartRoutine(fadeOut(text));
+            }
         }
     }
 
-    IEnumerator fadeIn(Image MyRenderer, float duration)
+    private void StopRunningCoroutines()
     {
-        float counter = 0;
-        Color spriteColor = MyRenderer.material.color;
-
-        while (counter < duration)
+        foreach (IEnumerator coroutine in _running—oroutines)
         {
-            counter += Time.deltaTime;
-            float alpha = Mathf.Lerp(0, 1, counter / duration);
-
-            MyRenderer.color = new Color(spriteColor.r, spriteColor.g, spriteColor.b, alpha);
-            yield return null;
+            Coroutines.StopRoutine(coroutine);
         }
     }
 
-    IEnumerator fadeOut(TextMeshProUGUI MyRenderer, float duration)
+    IEnumerator fadeOut(Image image)
     {
         float counter = 0;
-        Color spriteColor = MyRenderer.faceColor;
 
-        while (counter < duration)
+        while (counter < _fadeOutDuration)
         {
+            Color spriteColor = image.material.color;
             counter += Time.deltaTime;
-            float alpha = Mathf.Lerp(1, 0, counter / duration);
+            float alpha = Mathf.Lerp(1, 0, counter / _fadeOutDuration);
 
-            MyRenderer.faceColor = new Color(spriteColor.r, spriteColor.g, spriteColor.b, alpha);
+            image.color = new Color(spriteColor.r, spriteColor.g, spriteColor.b, alpha);
             yield return null;
         }
+        _running—oroutines.Remove(fadeOut(image));
     }
 
-    IEnumerator fadeIn(TextMeshProUGUI MyRenderer, float duration)
+    IEnumerator fadeIn(Image image)
     {
         float counter = 0;
-        Color spriteColor = MyRenderer.faceColor;
 
-        while (counter < duration)
+        while (counter < _fadeInDuration)
         {
+            Color spriteColor = image.material.color;
             counter += Time.deltaTime;
-            float alpha = Mathf.Lerp(0, 1, counter / duration);
+            float alpha = Mathf.Lerp(0, 1, counter / _fadeInDuration);
 
-            MyRenderer.faceColor = new Color(spriteColor.r, spriteColor.g, spriteColor.b, alpha);
+            image.color = new Color(spriteColor.r, spriteColor.g, spriteColor.b, alpha);
             yield return null;
         }
+        _running—oroutines.Remove(fadeOut(image));
+    }
+
+    IEnumerator fadeOut(TextMeshProUGUI text)
+    {
+        float counter = 0;
+
+        while (counter < _fadeOutDuration)
+        {
+            Color spriteColor = text.faceColor;
+            counter += Time.deltaTime;
+            float alpha = Mathf.Lerp(1, 0, counter / _fadeOutDuration);
+
+            text.faceColor = new Color(spriteColor.r, spriteColor.g, spriteColor.b, alpha);
+            yield return null;
+        }
+        _running—oroutines.Remove(fadeOut(text));
+    }
+
+    IEnumerator fadeIn(TextMeshProUGUI text)
+    {
+        float counter = 0;
+
+        while (counter < _fadeInDuration)
+        {
+            Color spriteColor = text.faceColor;
+            counter += Time.deltaTime;
+            float alpha = Mathf.Lerp(0, 1, counter / _fadeInDuration);
+
+            text.faceColor = new Color(spriteColor.r, spriteColor.g, spriteColor.b, alpha);
+            yield return null;
+        }
+        _running—oroutines.Remove(fadeOut(text));
     }
 }

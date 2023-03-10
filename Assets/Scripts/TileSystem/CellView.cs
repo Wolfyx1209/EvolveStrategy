@@ -9,13 +9,11 @@ public class CellView : MonoBehaviour
     private Image _nestIcon =>
         GetComponentInChildren<Image>();
 
-    private ViewFaider faider;
-    [SerializeField] private float _fadeInDuration = 0.5f;
-    [SerializeField] private float _fadeOutDuration = 0.5f;
+    private ViewFaider _faider;
 
     private void Awake()
     {
-        faider = new();
+        _faider = new();
         transform.transform.localScale =
             gameObject.GetComponentInParent<Transform>().localScale;
     }
@@ -24,18 +22,15 @@ public class CellView : MonoBehaviour
     {
         _unitsNumberTxt.text = newUnitNumber.ToString();
         Color col = new PlayersColors().GetColor(owner);
-        col.a = isShowen ? 1 : 0;
-        _unitsNumberTxt.faceColor = col;
+        _unitsNumberTxt.faceColor = new Color(col.r, col.g, col.b, _unitsNumberTxt.faceColor.a);
     }
 
-    public void UpdateNestView(bool isBuilded, bool isShowen)
+    public void UpdateNestView(bool isBuilt, bool isShowen)
     {
-        if (isShowen)
-        {
-            Color col = _nestIcon.color;
-            col.a = isBuilded ? 1 : 0;
-            _nestIcon.color = col;
-        }
+        _nestIcon.enabled = isBuilt;
+        Color col = _nestIcon.color;
+        col.a = isShowen ? 1 : 0;
+        _nestIcon.color = col;
     }
 
     public void UpdateFoodView()
@@ -45,31 +40,11 @@ public class CellView : MonoBehaviour
 
     public void HideView()
     {
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            if (transform.GetChild(i).TryGetComponent(out Image image))
-            {
-                faider.FadeOut(image, _fadeOutDuration);
-            }
-            if (transform.GetChild(i).TryGetComponent(out TextMeshProUGUI text))
-            {
-                faider.FadeOut(text, _fadeOutDuration);
-            }
-        }
+        _faider.FadeOutAllView(transform);
     }
 
     public void ShowView(bool isBuilded)
     {
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            if (transform.GetChild(i).TryGetComponent(out Image image))
-            {
-                faider.FadeIn(image, _fadeOutDuration);
-            }
-            if (transform.GetChild(i).TryGetComponent(out TextMeshProUGUI text))
-            {
-                faider.FadeIn(text, _fadeOutDuration);
-            }
-        }
+        _faider.FadeInAllView(transform);
     }
 }
