@@ -81,7 +81,7 @@ namespace TileSystem
             }
         }
 
-        private void Awake()
+        private void Start()
         {
             if(_owner == null) 
             {
@@ -107,12 +107,14 @@ namespace TileSystem
         {
             _isShowen = false;
             view.HideView();
+            ChangeColorTo(Color.gray);
         }
 
         public void ShowView() 
         {
             _isShowen = true;
             view.ShowView(_isNestBuilt);
+            ChangeColorTo(Color.white);
         }
         private void UpdateUnitView() 
         {

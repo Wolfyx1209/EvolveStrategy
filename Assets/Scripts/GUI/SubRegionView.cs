@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using TileSystem;
 using TMPro;
 using UnityEngine;
@@ -21,7 +20,11 @@ public class SubRegionView : MonoBehaviour
 
     private List<TerrainCell> _cells = new();
 
-    [SerializeField]private int _unitNumber;
+    private ViewFaider faider;
+
+    [SerializeField] private float _fadeInDuration = 0.5f;
+    [SerializeField] private float _fadeOutDuration = 0.5f;
+    [SerializeField] private int _unitNumber;
     private int _foodNumber;
     private bool _isNestBuilt;
     private GameAcktor _owner;
@@ -30,34 +33,47 @@ public class SubRegionView : MonoBehaviour
     private int unitNumber
     {
         get => _unitNumber;
-        set { _unitNumber = value; 
-            UpdateUnitView(); }
+        set
+        {
+            _unitNumber = value;
+            UpdateUnitView();
+        }
     }
 
     private int foodNumber
     {
         get => _foodNumber;
-        set { _foodNumber = value; 
-            UpdateFoodView(); }
+        set
+        {
+            _foodNumber = value;
+            UpdateFoodView();
+        }
     }
 
     private bool isNestBuilt
     {
         get => _isNestBuilt;
-        set { _isNestBuilt = value; 
-            UpdateNestView(); }
+        set
+        {
+            _isNestBuilt = value;
+            UpdateNestView();
+        }
     }
 
     private GameAcktor owner
     {
         get => _owner;
-        set { _owner = value;
-            UpdateOwnerView(); }
+        set
+        {
+            _owner = value;
+            UpdateOwnerView();
+        }
     }
 
 
     private void Awake()
     {
+        faider = new();
         transform.transform.localScale =
             gameObject.GetComponentInParent<Transform>().localScale;
     }
@@ -134,46 +150,56 @@ public class SubRegionView : MonoBehaviour
         _cells.Remove(cell);
     }
 
-    private void HideGeneralInfo() 
+    private void HideGeneralInfo()
     {
         _isShowen = false;
-        Color col = _unitsNumberTxt.faceColor;
-        col.a = 0;
-        _unitsNumberTxt.faceColor = col;
-        col = _nestIcon.color;
-        col.a = 0;
-        _nestIcon.color = col;
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            if (transform.GetChild(i).TryGetComponent(out Image image))
+            {
+                faider.FadeOut(image, _fadeOutDuration);
+            }
+            if (transform.GetChild(i).TryGetComponent(out TextMeshProUGUI text))
+            {
+                faider.FadeOut(text, _fadeOutDuration);
+            }
+        }
     }
-    private void ShowGeneralInfo() 
+    private void ShowGeneralInfo()
     {
         _isShowen = true;
-        Color col = _unitsNumberTxt.faceColor;
-        col.a = 1;
-        _unitsNumberTxt.faceColor = col;
-        col = _nestIcon.color;
-        col.a = isNestBuilt? 1 : 0;
-        _nestIcon.color = col;
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            if (transform.GetChild(i).TryGetComponent(out Image image))
+            {
+                faider.FadeIn(image, _fadeOutDuration);
+            }
+            if (transform.GetChild(i).TryGetComponent(out TextMeshProUGUI text))
+            {
+                faider.FadeIn(text, _fadeOutDuration);
+            }
+        }
     }
 
     private void UpdateUnitView()
     {
         _unitsNumberTxt.text = unitNumber.ToString();
         Color ownerColor = new PlayersColors().GetColor(_cells[0].owner.acktorName);
-        ownerColor.a = _isShowen ? 1 :0 ;
+        ownerColor.a = _isShowen ? 1 : 0;
         _unitsNumberTxt.faceColor = ownerColor;
     }
 
     private void UpdateNestView()
     {
-        if (_isShowen) 
-        { 
+        if (_isShowen)
+        {
             Color col = _nestIcon.color;
             col.a = isNestBuilt ? 1 : 0;
             _nestIcon.color = col;
         }
     }
 
-    private void UpdateFoodView() 
+    private void UpdateFoodView()
     {
 
     }
@@ -212,11 +238,11 @@ public class SubRegionView : MonoBehaviour
     }
     private void ChangeOwner(GameAcktor previousOwner, GameAcktor newOwner, TerrainCell cell)
     {
-        if(newOwner!= owner) 
+        if (newOwner != owner)
         {
             OnCellChangeOwner?.Invoke(cell);
             RemoveCell(cell);
-            if(_cells.Count == 0) 
+            if (_cells.Count == 0)
             {
                 OnEmptyView?.Invoke(_owner);
             }

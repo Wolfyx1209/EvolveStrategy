@@ -9,7 +9,7 @@ namespace TileSystem
     {
         private Dictionary<Vector2Int, TerrainCell> _terrainTilemap = new();
         private Tilemap _baseTilemap;
-        private void Awake()
+        private void Start()
         {
             _baseTilemap = GetComponent<Tilemap>();
             InitializeTerrainMap();

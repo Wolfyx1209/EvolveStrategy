@@ -12,6 +12,7 @@ namespace TileSystem
         private bool isRegionControledOnePlayer;
 
         private GameObject _regionView;
+        private LineRenderer _regionBoundes;
         private NestBuildView _buildView;
 
         private Dictionary<GameAcktor, SubRegionView> _views = new();
@@ -43,14 +44,14 @@ namespace TileSystem
             }
         }
 
-        public void DrawRegionBoundes() 
+        private void DrawRegionBoundes() 
         {
             List<Vector3> vector3s = new BorderMetrics().GetRegionBorder(_regionCells);
             GameObject go = (GameObject)Object.Instantiate(Resources.Load("ViewElements/RegionBorder"));
             go.transform.SetParent(_regionView.transform);
-            LineRenderer lr = go.GetComponent<LineRenderer>();
-            lr.positionCount = vector3s.Count;
-            lr.SetPositions(vector3s.ToArray());
+            _regionBoundes = go.GetComponent<LineRenderer>();
+            _regionBoundes.positionCount = vector3s.Count;
+            _regionBoundes.SetPositions(vector3s.ToArray());
         }
 
         public void ShowCellsInfo() 
@@ -59,6 +60,7 @@ namespace TileSystem
             {
                 pair.Value.ShowCellsInfo();
             }
+            _regionBoundes.enabled = true;
             isFade = false;
         }
 
@@ -68,6 +70,7 @@ namespace TileSystem
             {
                 pair.Value.HideCellsInfo();
             }
+            _regionBoundes.enabled = false;
             isFade = true;
         }
 
