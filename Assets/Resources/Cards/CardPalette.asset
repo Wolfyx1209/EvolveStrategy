@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a873e4d362fdfa94aa049ae767c500a0, type: 3}
+  m_Name: CardPalette
+  m_EditorClassIdentifier: 
+  MouthIcon: {fileID: 21300000, guid: 8f16f79c4ed07b04b87e9a7e8755c13b, type: 3}
+  MouthColor: {r: 0.6509804, g: 0.14901961, b: 0.043137256, a: 1}
+  InternalStructureIcon: {fileID: 21300000, guid: b1097a00cf19c2841b4c2f7367d055da, type: 3}
+  InternalStructureColor: {r: 0.62352943, g: 0.16862746, b: 0.40784317, a: 1}
+  HeadIcon: {fileID: 21300000, guid: 2372935576039f241841c6f15af42011, type: 3}
+  HeadColor: {r: 0.27450982, g: 0.50980395, b: 0.7058824, a: 1}
+  CoverIcon: {fileID: 21300000, guid: 050e99449431d004584278a8f9bc5e61, type: 3}
+  CoverColor: {r: 0.27450982, g: 0.5176471, b: 0.18431373, a: 1}
+  LimbsIcon: {fileID: 21300000, guid: 7368dc715a03cf94f8336a4d06b82dcc, type: 3}
+  LimbsColor: {r: 0.9058824, g: 0.36078432, b: 0.14509805, a: 1}

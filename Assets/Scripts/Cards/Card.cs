@@ -1,15 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
+using CardSystem;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
     private CanvasGroup _canvasGroup;
     private Canvas _canvas;
     private RectTransform _rectTransform;
+    private CardView _view = new();
+    [SerializeField] private CardData _data;
 
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -32,7 +32,9 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
     void Start()
     {
         _rectTransform = GetComponent<RectTransform>();
-        _canvas = GetComponentInParent<Canvas>();   
+        _canvas = GetComponentInParent<Canvas>();
         _canvasGroup = GetComponentInParent<CanvasGroup>();
-    }  
+        Debug.Log(_data.cardType);
+        _view.ColorCard(_rectTransform, _data);
+    }
 }
