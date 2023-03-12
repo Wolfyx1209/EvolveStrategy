@@ -2,7 +2,7 @@ using UnityEngine;
 using EventBusSystem;
 using TileSystem;
 
-public class GameStateManager : Singletone<GameStateManager>, IPlayerChoosesNestCellHandler
+public class GameStateManager : Singletone<GameStateManager>, IPlayerChoosesNestCellHandler, IWindowOpenHandler
 {
     public GameStates currentState { get; private set; }
 
@@ -10,7 +10,7 @@ public class GameStateManager : Singletone<GameStateManager>, IPlayerChoosesNest
     {
         ChangeCurrentState(GameStates.NestCellChoses);
     }
-    public void EndState(Region region) 
+    public void EndState(Region region)
     {
         ChangeCurrentState(GameStates.Battle);
     }
@@ -27,5 +27,15 @@ public class GameStateManager : Singletone<GameStateManager>, IPlayerChoosesNest
         {
             currentState = newState;
         }
+    }
+
+    public void WindowOnen()
+    {
+        ChangeCurrentState(GameStates.WindowOpen);
+    }
+
+    public void WindowClosed()
+    {
+        ChangeCurrentState(GameStates.Battle);
     }
 }

@@ -5,6 +5,7 @@ public class RegionShower : MonoBehaviour
 {
     private TerrainTilemap _terrainTilemap;
     private InputManager _inputManager;
+    private GameStateManager _gameStateManager;
 
     private Region _previousRegion = null;
 
@@ -12,28 +13,33 @@ public class RegionShower : MonoBehaviour
     {
         _inputManager = InputManager.instance;
         _terrainTilemap = FindObjectOfType<TerrainTilemap>();
+        _gameStateManager = GameStateManager.instance;
     }
 
     private void Update()
     {
-        if (_terrainTilemap.ContainTile(_inputManager.cursorPosition))
+        if (_gameStateManager.currentState == GameStates.Battle)
         {
-            Region newRegion = _terrainTilemap.GetTile(_inputManager.cursorPosition).region;
-            if (newRegion.isFade && newRegion != _previousRegion)
+            if (_terrainTilemap.ContainTile(_inputManager.cursorPosition))
             {
-                newRegion.ShowCellsInfo();
-                if(_previousRegion != null)
+                Region newRegion = _terrainTilemap.GetTile(_inputManager.cursorPosition).region;
+                if (newRegion.isFade && newRegion != _previousRegion)
+                {
+                    newRegion.ShowCellsInfo();
+                    if (_previousRegion != null)
+                        _previousRegion.HideCellsInfo();
+                    _previousRegion = newRegion;
+                }
+            }
+            else
+            {
+                if (_previousRegion != null)
+                {
                     _previousRegion.HideCellsInfo();
-                _previousRegion = newRegion;
+                    _previousRegion = null;
+                }
             }
         }
-        else 
-        {
-            if (_previousRegion != null) 
-            {
-                _previousRegion.HideCellsInfo();
-                _previousRegion = null;
-            }
-        }
+
     }
 }

@@ -18,8 +18,7 @@ namespace TileSystem
         public delegate void FoodNumberChenge(int previousNumber, int newNumber, TerrainCell cell);
         public event UnitNumberChenge OnFoodNumberChenge;
         #endregion
-        private CellView view => 
-            GetComponentInChildren<CellView>();
+        private CellView _view;
         public CellType cellType;
 
         private Region _region = null;
@@ -81,6 +80,10 @@ namespace TileSystem
             }
         }
 
+        private void Awake()
+        {
+            _view = GetComponentInChildren<CellView>();
+        }
         private void Start()
         {
             if(_owner == null) 
@@ -106,24 +109,24 @@ namespace TileSystem
         public void HideView() 
         {
             _isShowen = false;
-            view.HideView();
+            _view.HideView();
             ChangeColorTo(Color.gray);
         }
 
         public void ShowView() 
         {           
             _isShowen = true;
-            view.ShowView(_isNestBuilt);
+            _view.ShowView(_isNestBuilt);
             ChangeColorTo(Color.white);
         }
         private void UpdateUnitView() 
         {
-            view.UpdateUnitView(_unitNumber, _owner.acktorName, _isShowen);
+            _view.UpdateUnitView(_unitNumber, _owner.acktorName, _isShowen);
         }
 
         private void UpdateNestView() 
         {
-            view.UpdateNestView(_isNestBuilt, _isShowen);
+            _view.UpdateNestView(_isNestBuilt, _isShowen);
         }
 
         private void UpdateFoodView() 

@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using TileSystem;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class SubRegionView : MonoBehaviour
 {
@@ -12,11 +10,9 @@ public class SubRegionView : MonoBehaviour
     public delegate void EmptyView(GameAcktor owner);
     public event EmptyView OnEmptyView;
 
-    private TextMeshProUGUI _unitsNumberTxt =>
-        GetComponentInChildren<TextMeshProUGUI>();
+    private UnitText _unitsNumberTxt;
 
-    private Image _nestIcon =>
-        GetComponentInChildren<Image>();
+    private NestView _nestIcon;
 
     private List<TerrainCell> _cells = new();
 
@@ -74,6 +70,8 @@ public class SubRegionView : MonoBehaviour
         _faider = new();
         transform.transform.localScale =
             gameObject.GetComponentInParent<Transform>().localScale;
+        _nestIcon = GetComponentInChildren<NestView>();
+        _unitsNumberTxt = GetComponentInChildren<UnitText>();
     }
     private void OnEnable()
     {
@@ -161,17 +159,18 @@ public class SubRegionView : MonoBehaviour
 
     private void UpdateUnitView()
     {
-        _unitsNumberTxt.text = unitNumber.ToString();
-        Color ownerColor = new PlayersColors().GetColor(_owner.acktorName);
-        _unitsNumberTxt.faceColor = new Color(ownerColor.r, ownerColor.g, ownerColor.b, _unitsNumberTxt.faceColor.a);
+        _unitsNumberTxt.ChangeText(unitNumber.ToString());
+        Color col = new PlayersColors().GetColor(owner.acktorName);
+        _unitsNumberTxt.ChangeColorTo(col);
     }
 
     private void UpdateNestView(bool isBuilt)
     {
-        _nestIcon.enabled = isBuilt;
-        Color col = _nestIcon.color;
-        col.a = _isShowen ? 1 : 0;
-        _nestIcon.color = col;
+        _nestIcon.gameObject.SetActive(isBuilt);
+        if (isBuilt)
+        {
+            _nestIcon.ChangeTransparency(_isShowen ? 1 : 0);
+        }
     }
 
     private void UpdateFoodView()
