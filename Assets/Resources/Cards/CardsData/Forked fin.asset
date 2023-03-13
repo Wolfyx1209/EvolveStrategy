@@ -16,6 +16,7 @@ MonoBehaviour:
   title: Forcked fin
   number: 1
   image: {fileID: -119959419, guid: fa2c4e88f56da284a9dffcf4e1f02d45, type: 3}
+  cost: 0
   attackBonus: 0
   defenseBonus: 5
   moveSpeedBonus: 0
@@ -25,3 +26,4 @@ MonoBehaviour:
   coldResistanceBonus: 0
   heatResistanceBonus: 0
   poisonResistanceBonus: 0
+  openCards: []

@@ -1,40 +1,29 @@
-using CardSystem;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
-public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
+namespace CardSystem
 {
-    private CanvasGroup _canvasGroup;
-    private Canvas _canvas;
-    private RectTransform _rectTransform;
-    private CardView _view = new();
-    [SerializeField] private CardData _data;
-
-    public void OnBeginDrag(PointerEventData eventData)
+    public class Card : MonoBehaviour, ICard
     {
-        _canvasGroup.blocksRaycasts = false;
-        Transform slotTransform = _rectTransform.parent.transform;
-        slotTransform.SetAsLastSibling();
-    }
+        protected RectTransform _rectTransform;
+        protected CardView _view = new();
+        public CardData cardData { get; private set; }
 
-    public void OnDrag(PointerEventData eventData)
-    {
-        _rectTransform.anchoredPosition += eventData.delta / _canvas.scaleFactor;
-    }
+        public bool IsEquiped => throw new System.NotImplementedException();
 
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        _canvasGroup.blocksRaycasts = true;
-        _rectTransform.localPosition = Vector3.zero;
-    }
+        protected void Start()
+        {
+            if (cardData != null)
+            {
+                InstateCard(cardData);
+            }
+        }
 
-    void Start()
-    {
-        _rectTransform = GetComponent<RectTransform>();
-        _canvas = GetComponentInParent<Canvas>();
-        _canvasGroup = GetComponentInParent<CanvasGroup>();
-        Debug.Log(_data.cardType);
-        _view.ColorCard(_rectTransform, _data);
+        public virtual void InstateCard(CardData data)
+        {
+            _rectTransform = GetComponent<RectTransform>();
+            _view.ColorCard(_rectTransform, data);
+        }
     }
 }
+
+

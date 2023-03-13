@@ -4,7 +4,7 @@ namespace CardSystem
     {
         bool IsEquiped { get; }
 
-        CardType cardType { get; }
+        CardData cardData { get; }
     }
 
 }
