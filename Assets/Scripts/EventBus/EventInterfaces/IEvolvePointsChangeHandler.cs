@@ -2,7 +2,7 @@ namespace EventBusSystem
 {
     public interface IEvolvePointsChangeHandler : IGlobalSubscriber
     {
-        public bool EvolvePointsChanges(int value);
+        public void EvolvePointsChanges(int value);
     }
 }
 

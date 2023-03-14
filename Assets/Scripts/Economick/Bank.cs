@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 public class Bank : Singletone<Bank>
 {
-    private int _evolvePoints;
+    private int _evolvePoints = 1000;
     public int evolvePoints
     {
         get => _evolvePoints;

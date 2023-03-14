@@ -1,11 +1,11 @@
 using CardSystem;
 using System.Collections.Generic;
 using UnityEngine;
+using EventBusSystem;
 
 [RequireComponent(typeof(CardShopView))]
 public class CardShop : MonoBehaviour
 {
-    [SerializeField] private CardInHand hand;
     public CardData[] StartCards;
 
     private List<CardData> _avalibleForSell = new();
@@ -19,8 +19,9 @@ public class CardShop : MonoBehaviour
 
     private void Start()
     {
-        view = GetComponent<CardShopView>();
         bank = Bank.instance;
+        view = GetComponent<CardShopView>();
+        view.OnTryBuyCard += TryByCard;
         foreach (CardData card in StartCards)
         {
             _avalibleForSell.Add(card);
@@ -49,7 +50,7 @@ public class CardShop : MonoBehaviour
         if (bank.TryToBuy(card.cost)) 
         {
             AddNewCardsToSellPull(card);
-            AddCardToHand(card);
+            EventBus.RaiseEvent<ICardBoughtHandler>(it => it.CardBought(card));
             return true;
         }
         return false;
@@ -63,10 +64,5 @@ public class CardShop : MonoBehaviour
                 _avalibleForSell.Add(unlockedCard);
             }
         }
-    }
-
-    private void AddCardToHand(CardData card)   
-    {
-        hand.AddCard(card);
     }
 }

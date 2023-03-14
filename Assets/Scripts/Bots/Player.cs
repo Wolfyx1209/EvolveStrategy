@@ -1,9 +1,10 @@
 using BattleSystem;
+using CardSystem;
 using EventBusSystem;
 using TileSystem;
 using UnityEngine;
 
-public class Player : GameAcktor, ISwipeHandler, IClickHandler
+public class Player : GameAcktor, ISwipeHandler, IClickHandler, ICardEquipedHandler
 {
     private BattleManager _battleManager;
     private GameStateManager _gameStateManager;
@@ -52,6 +53,47 @@ public class Player : GameAcktor, ISwipeHandler, IClickHandler
         if (_gameStateManager.currentState == GameStates.Battle)
         {
             _battleManager.TryGiveOrderToAttackHalfUnit(swipeStartPosition, swipeEndPosition, this);
+        }
+    }
+
+    public void CardEquiped(ICard card, ICard previousCard)
+    {
+        CardData data = card.cardData;
+        if (data.attackBonus != 0)
+        {
+            unit.attack += data.attackBonus;
+        }
+        if (data.defenseBonus != 0)
+        {
+            unit.defense += data.defenseBonus;
+        }
+        if (data.moveSpeedBonus != 0)
+        {
+            unit.moveSpeed += data.moveSpeedBonus;
+        }
+        if (data.spawnSpeedBonus != 0)
+        {
+            unit.spawnSpeed += data.spawnSpeedBonus;
+        }
+        if (data.swimSpeedTimeBonus != 0)
+        {
+            unit.swimSpeedTime += data.swimSpeedTimeBonus;
+        }
+        if (data.climbSpeedBonus != 0)
+        {
+            unit.climbSpeed += data.climbSpeedBonus;
+        }
+        if (data.coldResistanceBonus != 0)
+        {
+            unit.coldResistance += data.coldResistanceBonus;
+        }
+        if (data.heatResistanceBonus != 0)
+        {
+            unit.heatResistance += data.heatResistanceBonus;
+        }
+        if (data.poisonResistanceBonus != 0)
+        {
+            unit.poisonResistance += data.poisonResistanceBonus;
         }
     }
 }

@@ -1,6 +1,5 @@
 using CardSystem;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class CardView
 {
@@ -14,32 +13,11 @@ public class CardView
         FillGeneralText(card, data);
     }
 
-    private void DefineTypeColorAndSprite(CardType type) 
+    private void DefineTypeColorAndSprite(CardType type)
     {
         TypeToColorConverter palette = Resources.Load<TypeToColorConverter>("Cards/CardPalette");
-        switch (type)
-        {
-            case (CardType.Head):
-                typeSprite = palette.HeadIcon;
-                typeColor = palette.HeadColor;
-                break;
-            case (CardType.Limbs):
-                typeSprite = palette.LimbsIcon;
-                typeColor = palette.LimbsColor;
-                break;
-            case (CardType.Mouth):
-                typeSprite = palette.MouthIcon;
-                typeColor = palette.MouthColor;
-                break;
-            case (CardType.Cover):
-                typeSprite = palette.CoverIcon;
-                typeColor = palette.CoverColor;
-                break;
-            case (CardType.InternalStructure):
-                typeSprite = palette.InternalStructureIcon;
-                typeColor = palette.InternalStructureColor;
-                break;
-        }
+        typeSprite = palette.GetTypeSprite(type);
+        typeColor = palette.GetTypeColor(type);
     }
     private void RepaintCardElements(Transform transform)
     {

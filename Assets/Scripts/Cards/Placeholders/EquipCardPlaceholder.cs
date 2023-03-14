@@ -1,30 +1,29 @@
 using UnityEngine;
 using EventBusSystem;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace CardSystem
 {
-    public class EquipCardPlaceholder : MonoBehaviour, ICardPlaceholder, IDropHandler
+    public class EquipCardPlaceholder : MonoBehaviour, ICardPlaceholder
     {
+        [SerializeField] private Image _typeIcon;
+        [SerializeField] private Image _typeIconCirculit;
+
         private bool _isEmpty = true;
-        public CardType slotType { get; private set; }
+        [SerializeField] private CardType _cardType;
+        [SerializeField] private Transform cardPlace;
+
+
+        public CardType slotType { get => _cardType; private set => _cardType = value; }
 
         public bool isEmpty { get => _isEmpty; private set => _isEmpty = value; }
 
         public ICard card { get; private set; }
 
-        public void OnDrop(PointerEventData eventData)
+        private void Start()
         {
-            ICard droppedCard = eventData.pointerDrag.GetComponent<ICard>();
-            if (TryPlaceCard(droppedCard))
-            {
-                Transform cardTransform = eventData.pointerDrag.transform;
-                cardTransform.GetComponentInParent<ICardPlaceholder>().RemoveCard(droppedCard);
-                cardTransform.SetParent(transform);
-                cardTransform.localPosition = Vector3.zero;
-                EventBus.RaiseEvent<ICardEquipedHandler>(it => it.CardEquiped(droppedCard, card));
-                card = droppedCard;
-            }
+            RepaintTypeElements();
         }
 
         public void RemoveCard(ICard card)
@@ -34,11 +33,44 @@ namespace CardSystem
 
         public bool TryPlaceCard(ICard card)
         {
-            if (isEmpty && slotType == card.cardData.cardType)
+            if (slotType == card.cardData.cardType)
             {
+                UpdateCardInfo(card);
+                PostCard(card);
                 return true;
             }
             return false;
+        }
+
+        private void UpdateCardInfo(ICard card) 
+        {
+            EventBus.RaiseEvent<ICardEquipedHandler>(it => it.CardEquiped(card, this.card));
+            this.card = card;
+        }
+        private void PostCard(ICard card) 
+        {
+            RectTransform cardTransform = card.rectTransform;
+
+            cardTransform.SetParent(cardPlace, false);
+            cardTransform.SetAsLastSibling();
+            cardTransform.localPosition = Vector3.zero;
+
+            cardTransform.anchorMax = Vector2.one;
+            cardTransform.anchorMin = Vector2.zero;
+            cardTransform.offsetMin = Vector2.zero;
+            cardTransform.offsetMax = Vector2.zero;
+        }
+
+        private void RepaintTypeElements()
+        {
+            TypeToColorConverter palette = Resources.Load<TypeToColorConverter>("Cards/CardPalette");
+            _typeIconCirculit.color = palette.GetTypeColor(slotType);
+            _typeIcon.sprite = palette.GetTypeSprite(slotType);
+        }
+
+        public void ReturnCardBack(ICard card)
+        {
+            PostCard(card);
         }
     }
 }

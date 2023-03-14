@@ -7,6 +7,7 @@ namespace CardSystem
     {
         private CanvasGroup _canvasGroup;
         private Canvas _canvas;
+        private ICardPlaceholder _currentPlaceholder;
 
         private new void Start()
         {
@@ -15,25 +16,35 @@ namespace CardSystem
         public void OnBeginDrag(PointerEventData eventData)
         {
             _canvasGroup.blocksRaycasts = false;
-            Transform slotTransform = _rectTransform.parent.transform;
-            slotTransform.SetAsLastSibling();
+            _currentPlaceholder = rectTransform.GetComponentInParent<ICardPlaceholder>();
+            rectTransform.SetParent(_canvas.transform);
+            rectTransform.SetAsLastSibling();
         }
 
         public void OnDrag(PointerEventData eventData)
         {
-            _rectTransform.anchoredPosition += eventData.delta / _canvas.scaleFactor;
+            rectTransform.anchoredPosition += eventData.delta / _canvas.scaleFactor;
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
             _canvasGroup.blocksRaycasts = true;
-            _rectTransform.localPosition = Vector3.zero;
+            if (eventData.pointerCurrentRaycast.gameObject.TryGetComponent(out ICardPlaceholder placeholder))
+            {
+                if (placeholder.TryPlaceCard(this) && placeholder != _currentPlaceholder)
+                {
+                    _currentPlaceholder.RemoveCard(this);
+                    _currentPlaceholder = placeholder;
+                    return;
+                }
+            }
+            _currentPlaceholder.ReturnCardBack(this);
         }
 
         public override void InstateCard(CardData data)
         {
             base.InstateCard(data);
-            _canvas = GetComponentInParent<Canvas>();
+            _canvas = GameObject.FindGameObjectWithTag("CardMenu").GetComponent<Canvas>();
             _canvasGroup = GetComponentInParent<CanvasGroup>();
         }
     }

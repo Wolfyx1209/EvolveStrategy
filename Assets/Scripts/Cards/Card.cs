@@ -4,7 +4,7 @@ namespace CardSystem
 {
     public class Card : MonoBehaviour, ICard
     {
-        protected RectTransform _rectTransform;
+        public RectTransform rectTransform { get; protected set; }
         protected CardView _view = new();
         public CardData cardData { get; private set; }
 
@@ -20,8 +20,9 @@ namespace CardSystem
 
         public virtual void InstateCard(CardData data)
         {
-            _rectTransform = GetComponent<RectTransform>();
-            _view.ColorCard(_rectTransform, data);
+            rectTransform = GetComponent<RectTransform>();
+            _view.ColorCard(rectTransform, data);
+            cardData = data;
         }
     }
 }

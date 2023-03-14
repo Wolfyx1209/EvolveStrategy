@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace CardSystem
 {
@@ -11,21 +10,9 @@ namespace CardSystem
 
         public ICard card { get; private set; }
 
-        public void OnDrop(PointerEventData eventData)
-        {
-            ICard droppedCard = eventData.pointerDrag.GetComponent<ICard>();
-            if (TryPlaceCard(droppedCard))
-            {
-                Transform cardTransform = eventData.pointerDrag.transform;
-                cardTransform.GetComponentInParent<ICardPlaceholder>().RemoveCard(droppedCard);
-                cardTransform.SetParent(transform);
-                cardTransform.localPosition = Vector3.zero;
-            }
-        }
-
         public void RemoveCard(ICard card)
         {
-            isEmpty = true;
+            Destroy(gameObject);
         }
 
         public bool TryPlaceCard(ICard card)
@@ -33,9 +20,29 @@ namespace CardSystem
             if (isEmpty)
             {
                 this.card = card;
+                PostCard(card);
                 return true;
             }
             return false;
+        }
+
+        private void PostCard(ICard card)
+        {
+            RectTransform cardTransform = card.rectTransform;
+
+            cardTransform.SetParent(transform, false);
+            cardTransform.SetAsLastSibling();
+            cardTransform.localPosition = Vector3.zero;
+
+            cardTransform.anchorMax = Vector2.one;
+            cardTransform.anchorMin = Vector2.zero;
+            cardTransform.offsetMin = Vector2.zero;
+            cardTransform.offsetMax = Vector2.zero;
+        }
+
+        public void ReturnCardBack(ICard card)
+        {
+            PostCard(card);
         }
     }
 }

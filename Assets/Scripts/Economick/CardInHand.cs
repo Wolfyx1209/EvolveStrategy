@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CardSystem 
 { 
-    public class CardInHand : MonoBehaviour, ICardEquipedHandler
+    public class CardInHand : MonoBehaviour, ICardBoughtHandler
     {
         [SerializeField] private Transform cardZome;
         private GameObject cardAsset;
@@ -16,11 +16,17 @@ namespace CardSystem
             placeholderAsset = (GameObject)Resources.Load("Cards/CardPrefab/CardPlaseHolder");
             EventBus.Subscribe(this);
         }
-        public void AddCard(CardData data)
+
+        private void OnDestroy()
+        {
+            EventBus.Unsubscribe(this);
+        }
+        private void AddCard(CardData data)
         {
             HandCardPlaceHolder newPlaceholder = Instantiate(placeholderAsset, cardZome).GetComponent<HandCardPlaceHolder>();
             Card newCard = Instantiate(cardAsset, newPlaceholder.transform).GetComponent<Card>();
             newCard.InstateCard(data);
+            newPlaceholder.TryPlaceCard(newCard);
             cardsInHand.Add(newCard, newPlaceholder);
         }
 
@@ -29,13 +35,9 @@ namespace CardSystem
             cardsInHand.Remove(card);
         }
 
-        public void CardEquiped(ICard card, ICard previousCard)
+        public void CardBought(CardData card)
         {
-            if (cardsInHand.ContainsKey(card)) 
-            {
-                DeleteCard(card);
-                Destroy(cardsInHand[card].gameObject);
-            }
+            AddCard(card);
         }
     }
 }
