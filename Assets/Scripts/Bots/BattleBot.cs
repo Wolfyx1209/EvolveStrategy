@@ -17,6 +17,7 @@ public class BattleBot : GameAcktor, ICellChangeOwnerHandler
 
     private new void Awake()
     {
+        acktorName = _me;
         base.Awake();
         _tilemap = FindObjectOfType<TerrainTilemap>();
         _battleManager = BattleManager.instance;

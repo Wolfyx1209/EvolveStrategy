@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class GuideWindowShower : MonoBehaviour
 {
-    [SerializeField] private GameObject _windowPrefab;
+    [SerializeField] private GameObject _cardWindow;
+    [SerializeField] private GameObject _guideWindowPrefab;
     [SerializeField] private GameObject _darckerPrefab;
     [SerializeField] private Canvas _canvas;
     [SerializeField] private bool _isWindowShowes;
@@ -13,7 +14,20 @@ public class GuideWindowShower : MonoBehaviour
 
     private void Start()
     {
-        AddDataToQueue("TestGuideWindow");
+        //AddDataToQueue("TestGuideWindow");
+    }
+    public void ShowCardWindow() 
+    {
+        Time.timeScale = 0;
+        _cardWindow.SetActive(true); 
+    }
+    public void HideCardWindow() 
+    {
+        if (!_isWindowShowes) 
+        {
+            Time.timeScale = 1;
+        }
+        _cardWindow?.SetActive(false);
     }
     private void StartShowWindows()
     {
@@ -35,7 +49,7 @@ public class GuideWindowShower : MonoBehaviour
     private void ShowWindow(GuideWindowData name)
     {
         _isWindowShowes = true;
-        GuideWindow window = Instantiate(_windowPrefab).GetComponent<GuideWindow>();
+        GuideWindow window = Instantiate(_guideWindowPrefab).GetComponent<GuideWindow>();
         window.transform.SetParent(_canvas.transform, false);
         window.transform.SetAsLastSibling();
         window.FillWindow(name);

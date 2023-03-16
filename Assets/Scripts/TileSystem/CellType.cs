@@ -6,6 +6,8 @@ namespace TileSystem
     {
         [SerializeField] private string _type;
 
-        public string Type => _type;
+        public string type => _type;
+        public ClimateType climate;
+        public MoveType move;
     }
 }

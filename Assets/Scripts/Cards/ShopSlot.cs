@@ -1,4 +1,5 @@
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace CardSystem 
@@ -21,6 +22,8 @@ namespace CardSystem
             cardTransform.offsetMin = Vector2.zero;
             cardTransform.offsetMax = Vector2.zero;
             price.text = card.cardData.cost.ToString();
+            OnClickedInvoke onClickedInvoke = plasedCard.AddComponent<OnClickedInvoke>();
+            onClickedInvoke.OnClick += BuyCard;
         }
 
         public void ChangeCard(CardData data) 

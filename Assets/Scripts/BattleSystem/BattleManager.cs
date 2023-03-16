@@ -1,6 +1,7 @@
 using EventBusSystem;
 using System.Collections.Generic;
 using TileSystem;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 namespace BattleSystem
@@ -12,8 +13,6 @@ namespace BattleSystem
         private TerrainTilemap _terrainTilemap;
 
         private List<IComand> _comandList = new();
-
-        private const float DEFAULT_TIME_TO_ATTACK   = 4f;
 
         private void OnEnable()
         {
@@ -58,7 +57,8 @@ namespace BattleSystem
         private void GiveOrderToAttack(TerrainCell from, TerrainCell to, int unitsSent)
         {
             Unit attackingUnit = from.owner.unit;
-            AttackCell attackCell = new(to, attackingUnit, unitsSent , DEFAULT_TIME_TO_ATTACK * attackingUnit.moveSpeed);
+            AttackCell attackCell = new(to, attackingUnit, unitsSent, 
+                attackingUnit.GetMoveDuration(to.cellType.move));
             from.unitNumber -= unitsSent;
             attackCell.OnAttackEnd += ChoseBattleSituation;
             attackCell.OnComandEnd += RemoveComand;

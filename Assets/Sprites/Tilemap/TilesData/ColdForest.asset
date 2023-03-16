@@ -10,6 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c52705f13bd48054686fc046a7df7283, type: 3}
-  m_Name: GrassType
+  m_Name: ColdForest
   m_EditorClassIdentifier: 
-  _type: Grass
+  _type: ColdForest
+  climate: 2
+  move: 0

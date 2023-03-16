@@ -4,7 +4,7 @@ using TileSystem;
 public class SimpleSpawner : ICellBased
 {
     private Timer _timer = new();
-    private TerrainCell _cell;
+    protected TerrainCell _cell;
     private Unit _unit;
     protected float DEFAULT_TIME_TO_SPAWN = 3;
     public SimpleSpawner(TerrainCell cell)
@@ -25,7 +25,7 @@ public class SimpleSpawner : ICellBased
         _timer.OnTimeOver += SpawnUnit;
     }
 
-    private void SpawnUnit()
+    protected virtual void SpawnUnit()
     {
         _cell.unitNumber++;
         StartTimerToSpawnUnit();

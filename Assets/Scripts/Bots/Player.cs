@@ -12,9 +12,9 @@ public class Player : GameAcktor, ISwipeHandler, IClickHandler, ICardEquipedHand
     private NestBuilder _nestBuilder;   
      protected new void Awake()
     {
+        acktorName = PlayersList.Player;
         base.Awake();
         EventBus.Subscribe(this);
-        acktorName = PlayersList.Player;
         _battleManager = BattleManager.instance;
         _gameStateManager = GameStateManager.instance;
         _terrainTilemap = FindObjectOfType<TerrainTilemap>();
@@ -67,9 +67,9 @@ public class Player : GameAcktor, ISwipeHandler, IClickHandler, ICardEquipedHand
         {
             unit.defense += data.defenseBonus;
         }
-        if (data.moveSpeedBonus != 0)
+        if (data.walckSpeedBonus != 0)
         {
-            unit.moveSpeed += data.moveSpeedBonus;
+            unit.walckSpeed += data.walckSpeedBonus;
         }
         if (data.spawnSpeedBonus != 0)
         {
@@ -77,7 +77,7 @@ public class Player : GameAcktor, ISwipeHandler, IClickHandler, ICardEquipedHand
         }
         if (data.swimSpeedTimeBonus != 0)
         {
-            unit.swimSpeedTime += data.swimSpeedTimeBonus;
+            unit.swimSpeed += data.swimSpeedTimeBonus;
         }
         if (data.climbSpeedBonus != 0)
         {

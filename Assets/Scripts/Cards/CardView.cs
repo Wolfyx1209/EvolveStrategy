@@ -62,33 +62,33 @@ public class CardView
         {
             description += ("+" + data.defenseBonus + " Defense,\n");
         }
-        if (data.moveSpeedBonus != 0)
+        if (data.walckSpeedBonus != 0)
         {
-            description += ("+" + data.moveSpeedBonus + " Move speed,\n");
+            description += ("+" + data.walckSpeedBonus * 100 + "% Walck speed,\n");
         }
         if (data.spawnSpeedBonus != 0)
         {
-            description += ("+" + data.spawnSpeedBonus + " Spawn speed,\n");
+            description += ("+" + data.spawnSpeedBonus * 100 + "% Spawn speed,\n");
         }
         if (data.swimSpeedTimeBonus != 0)
         {
-            description += ("+" + data.swimSpeedTimeBonus + " Swim,\n");
+            description += ("+" + data.swimSpeedTimeBonus * 100 + "% Swim,\n");
         }
         if (data.climbSpeedBonus != 0)
         {
-            description += ("+" + data.climbSpeedBonus + " Climb,\n");
+            description += ("+" + data.climbSpeedBonus * 100 + "% Climb,\n");
         }
         if (data.coldResistanceBonus != 0)
         {
-            description += ("+" + data.coldResistanceBonus + " Cold resistance,\n");
+            description += ("+" + data.coldResistanceBonus * 100  + "% Cold resistance,\n");
         }
         if (data.heatResistanceBonus != 0)
         {
-            description += ("+" + data.heatResistanceBonus + " Heat resistance,\n");
+            description += ("+" + data.heatResistanceBonus * 100 + "% Heat resistance,\n");
         }
         if (data.poisonResistanceBonus != 0)
         {
-            description += ("+" + data.poisonResistanceBonus + " Poison resistance ,\n");
+            description += ("+" + data.poisonResistanceBonus * 100 + "% Poison resistance ,\n");
         }
 
         return description;

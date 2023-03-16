@@ -47,7 +47,7 @@ public class CardShop : MonoBehaviour
 
     public bool TryByCard(CardData card) 
     {
-        if (bank.TryToBuy(card.cost)) 
+        if (bank.TryToBuy(PlayersList.Player, card.cost)) 
         {
             AddNewCardsToSellPull(card);
             EventBus.RaiseEvent<ICardBoughtHandler>(it => it.CardBought(card));

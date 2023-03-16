@@ -15,6 +15,8 @@ namespace TileSystem
         private LineRenderer _regionBoundes;
         private NestBuildView _buildView;
 
+        private CellType _cellType;
+
         private Dictionary<GameAcktor, SubRegionView> _views = new();
 
         public bool isFade = true;
@@ -25,6 +27,7 @@ namespace TileSystem
             _regionView = new GameObject("RegionView");
             _regionView.transform.SetParent(GameObject.FindGameObjectWithTag("GUICanvas").transform, false);
             _regionView.AddComponent<RectTransform>();
+            _cellType = regionCells[0].cellType;
             foreach(TerrainCell cell in _regionCells) 
             {
                 cell.region = this;
@@ -50,6 +53,11 @@ namespace TileSystem
             GameObject go = (GameObject)Object.Instantiate(Resources.Load("ViewElements/RegionBorder"));
             go.transform.SetParent(_regionView.transform);
             _regionBoundes = go.GetComponent<LineRenderer>();
+            RegionPalette palette = Resources.Load<RegionPalette>("Palettes/RegionPalette");
+            Color col = palette.GetColor(_cellType.climate);
+            _regionBoundes.startColor = col;
+            _regionBoundes.endColor = col;
+            _regionBoundes.material.shader = palette.GetShader(_cellType.move);
             _regionBoundes.positionCount = vector3s.Count;
             _regionBoundes.SetPositions(vector3s.ToArray());
         }

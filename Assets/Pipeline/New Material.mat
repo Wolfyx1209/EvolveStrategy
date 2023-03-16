@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: New Material
-  m_Shader: {fileID: -6465566751694194690, guid: bc9fde60b573885489a3dba044a80c65, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: d8b0e12c8a2d706499be414af47113e1, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _FLIPBOOKBLENDING_OFF

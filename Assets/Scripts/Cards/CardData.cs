@@ -15,7 +15,7 @@ namespace CardSystem
         [Header("Bonuses:")]
         public int attackBonus;
         public int defenseBonus;
-        public float moveSpeedBonus;
+        public float walckSpeedBonus;
         public float spawnSpeedBonus;
         public float swimSpeedTimeBonus;
         public float climbSpeedBonus;

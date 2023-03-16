@@ -37,23 +37,26 @@ namespace EventBusSystem
         public static void RaiseEvent<TSubscriber>(Action<TSubscriber> action)
         where TSubscriber : IGlobalSubscriber
         {
-            SubscribersList<IGlobalSubscriber> subscribersOfThisAction = _subscribers[typeof(TSubscriber)];
-            subscribersOfThisAction._isExecuting = true;
-
-            foreach (IGlobalSubscriber subscriber in subscribersOfThisAction.List)
+            if (_subscribers.ContainsKey(typeof(TSubscriber)))
             {
-                try
-                {
-                    action?.Invoke((TSubscriber)subscriber);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError(e);
-                }
-            }
+                SubscribersList<IGlobalSubscriber> subscribersOfThisAction = _subscribers[typeof(TSubscriber)];
+                subscribersOfThisAction._isExecuting = true;
 
-            subscribersOfThisAction._isExecuting = false;
-            subscribersOfThisAction.Cleanup();
+                foreach (IGlobalSubscriber subscriber in subscribersOfThisAction.List)
+                {
+                    try
+                    {
+                        action?.Invoke((TSubscriber)subscriber);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError(e);
+                    }
+                }
+
+                subscribersOfThisAction._isExecuting = false;
+                subscribersOfThisAction.Cleanup();
+            }
         }
 
         public static List<Type> GetSubscribersTypes(IGlobalSubscriber globalSubscriber)
