@@ -7,12 +7,15 @@ namespace TileSystem
 {
     public class TerrainTilemap : MonoBehaviour
     {
-        private Dictionary<Vector2Int, TerrainCell> _terrainTilemap = new();
+        private Dictionary<Vector2Int, TerrainCell> _terrainTilemap;
         private Tilemap _baseTilemap;
-        private void Start()
+        private void Awake()
         {
-            _baseTilemap = GetComponent<Tilemap>();
-            InitializeTerrainMap();
+            if (_terrainTilemap == null)
+            {
+                _baseTilemap = GetComponent<Tilemap>();
+                InitializeTerrainMap();
+            }
         }
         public bool ContainTile(Vector3 worldCoordinate)
         {
@@ -56,8 +59,23 @@ namespace TileSystem
             return new Vector2Int(gridPosition.x, gridPosition.y);
         }
 
+        public List<TerrainCell> GetAllCells() 
+        {
+            List<TerrainCell> cells= new();
+            foreach(KeyValuePair<Vector2Int, TerrainCell> pair in _terrainTilemap) 
+            { 
+                cells.Add(pair.Value);
+            }
+            return cells;
+        }
+
         public List<TerrainCell> GetAllCellsOfOnePlayer(GameAcktor player)
         {
+            if(_terrainTilemap == null) 
+            {
+                _baseTilemap = GetComponent<Tilemap>();
+                InitializeTerrainMap();
+            }
             List<TerrainCell> cellsOfOnePlayer = new();
             foreach (TerrainCell cell in _terrainTilemap.Values) 
             { 
@@ -80,6 +98,7 @@ namespace TileSystem
         }
         private void InitializeTerrainMap()
         {
+            _terrainTilemap = new();
             for (int i = 0; i < transform.childCount; i++)
             {
                 AddToTilemapIfObjectIsCell(transform.GetChild(i));

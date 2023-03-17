@@ -2,11 +2,9 @@ using TileSystem;
 
 public class NoneAcktor : GameAcktor
 {
-    protected new void Awake()
-    {
-        acktorName = PlayersList.None;
-        base.Awake();
-    }
+    public NoneAcktor(TerrainTilemap terrainTilemap): base(PlayersList.None, terrainTilemap) 
+    {    }
+
     public override void OfferToBuildNest(Region region)
     {   }
 }

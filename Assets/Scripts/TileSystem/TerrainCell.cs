@@ -6,7 +6,7 @@ namespace TileSystem
     public class TerrainCell : MonoBehaviour
     {
         #region Events
-        public delegate void OwnerChenge(GameAcktor previousOwner, GameAcktor newOwner, TerrainCell cell);
+        public delegate void OwnerChenge(GameAcktor newOwner, TerrainCell cell);
         public event OwnerChenge OnOwnerChenge;
 
         public delegate void UnitNumberChenge(int previousNumber, int newNumber, TerrainCell cell);
@@ -17,7 +17,11 @@ namespace TileSystem
 
         public delegate void FoodNumberChenge(int previousNumber, int newNumber, TerrainCell cell);
         public event UnitNumberChenge OnFoodNumberChenge;
+
+        public delegate void CellFilled(TerrainCell cell);
+        public event CellFilled OnCellFilled;
         #endregion
+
         private CellView _view;
         public CellType cellType;
 
@@ -25,7 +29,9 @@ namespace TileSystem
 
         private bool _isShowen;
         private ICellBased building;
-        [SerializeField] private GameAcktor _owner;
+
+        [SerializeField] public PlayersList startOwner;
+        private GameAcktor _owner;
         [SerializeField] private int _unitNumber;
         [SerializeField] private int _foodNumber;
         [SerializeField] private bool _isNestBuilt;
@@ -40,11 +46,12 @@ namespace TileSystem
             get => _owner;
             set 
             {
-                GameAcktor previousOwner = _owner;
                 _owner = value;
                 BuildOrDestroyNest();
-                EventBus.RaiseEvent<ICellChangeOwnerHandler>(it => it.ChangeOwner(previousOwner, value, this));
-                OnOwnerChenge?.Invoke(previousOwner, value, this);
+
+                if(value != null)
+                    EventBus.RaiseEvent<ICellChangeOwnerHandler>(it => it.ChangeOwner(value, this));
+                OnOwnerChenge?.Invoke(owner, this);
             }
         }
         public int unitNumber
@@ -79,24 +86,18 @@ namespace TileSystem
                 BuildOrDestroyNest();
             }
         }
-
-        private void Awake()
+        public void FillCell() 
         {
             _view = GetComponentInChildren<CellView>();
-        }
-        private void Start()
-        {
-            if(_owner == null) 
-            {
-                _owner = FindObjectOfType<NoneAcktor>();
-            }
             UpdateNestView();
             UpdateUnitView();
-            if(_owner.acktorName != PlayersList.None) 
+            if (_owner.acktorName != PlayersList.None)
             {
+                Debug.Log(_owner.acktorName);
                 building = new SimpleSpawner(this);
                 BuildOrDestroyNest();
             }
+            OnCellFilled?.Invoke(this);
         }
 
         private SpriteRenderer _spriteRenderer => gameObject.GetComponent<SpriteRenderer>();
@@ -136,13 +137,20 @@ namespace TileSystem
 
         private void BuildOrDestroyNest() 
         {
-            if (isNestBuilt) 
-            { 
-                building = new Nest(this);
+            if (_owner.acktorName == PlayersList.None)
+            {
+                building = null;
             }
             else 
             {
-                building = new SimpleSpawner(this);
+                if (isNestBuilt)
+                {
+                    building = new Nest(this);
+                }
+                else
+                {
+                    building = new SimpleSpawner(this);
+                }
             }
         }
     }

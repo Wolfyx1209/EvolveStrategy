@@ -1,6 +1,7 @@
 using BattleSystem;
 using CardSystem;
 using EventBusSystem;
+using System.Collections.Generic;
 using TileSystem;
 using UnityEngine;
 
@@ -8,16 +9,14 @@ public class Player : GameAcktor, ISwipeHandler, IClickHandler, ICardEquipedHand
 {
     private BattleManager _battleManager;
     private GameStateManager _gameStateManager;
-    private TerrainTilemap _terrainTilemap;
-    private NestBuilder _nestBuilder;   
-     protected new void Awake()
+    private NestBuilder _nestBuilder;
+
+    public Player(TerrainTilemap terrainTilemap) : 
+        base( PlayersList.Player, terrainTilemap)
     {
         acktorName = PlayersList.Player;
-        base.Awake();
-        EventBus.Subscribe(this);
         _battleManager = BattleManager.instance;
         _gameStateManager = GameStateManager.instance;
-        _terrainTilemap = FindObjectOfType<TerrainTilemap>();
         _nestBuilder = NestBuilder.instance;
     }
     public override void OfferToBuildNest(Region region)

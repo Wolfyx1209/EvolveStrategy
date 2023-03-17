@@ -3,45 +3,49 @@ using System.Collections.Generic;
 using UnityEngine;
 using TileSystem;
 using BattleSystem;
-using EventBusSystem;
 
-public class BattleBot : GameAcktor, ICellChangeOwnerHandler
+public class BattleBot : GameAcktor
 {
-    private TerrainTilemap _tilemap;
     private BattleManager _battleManager;
-
-    private List<TerrainCell> _myCells;
+    private NestBuilder _builder;
 
     [SerializeField] private PlayersList _me;
     [SerializeField] private float TimeToOneTurn;
+    private Coroutine currentCorutine;
 
-    private new void Awake()
+    public BattleBot(PlayersList acktorName, TerrainTilemap terrainTilemap): 
+        base(acktorName, terrainTilemap)
     {
-        acktorName = _me;
-        base.Awake();
-        _tilemap = FindObjectOfType<TerrainTilemap>();
         _battleManager = BattleManager.instance;
-        _myCells = _tilemap.GetAllCellsOfOnePlayer(this);
-        EventBus.Subscribe(this);
+        _builder = NestBuilder.instance;
+    }
 
-        StartCoroutine(AnalysisSituationAndMakeTurn());
+    public void StartBot() 
+    {
+        currentCorutine = Coroutines.StartRoutine(AnalysisSituationAndMakeTurn());
+    }
+
+    public void StopBot() 
+    {
+        Coroutines.StopRoutine(currentCorutine);
     }
 
     IEnumerator AnalysisSituationAndMakeTurn() 
     {
-        while(_myCells.Count > 0) 
+        Debug.Log(_myCells.Count);
+        while (_myCells.Count > 0) 
         {
-            foreach(TerrainCell cell in _myCells) 
+            yield return new WaitForSeconds(TimeToOneTurn);
+            foreach (TerrainCell cell in _myCells) 
             {
                 MakeDesigion(cell);
             }
-            yield return new WaitForSeconds(TimeToOneTurn);
         }
     }
 
     private void MakeDesigion(TerrainCell cell) 
     { 
-        List<TerrainCell> cellToAnalysis = _tilemap.GetCellNeighbors(cell);
+        List<TerrainCell> cellToAnalysis = _terrainTilemap.GetCellNeighbors(cell);
         TerrainCell friendMaxCell = null;
         TerrainCell enemyMinCell = null;
         TerrainCell enemyMaxCell = null;
@@ -100,21 +104,11 @@ public class BattleBot : GameAcktor, ICellChangeOwnerHandler
         }
     }
 
-    public void ChangeOwner(GameAcktor previousOwner, GameAcktor newOwner, TerrainCell cell)
-    {
-        if(previousOwner == this && _myCells.Contains(cell)) 
-        { 
-            _myCells.Remove(cell);
-        }
-        if(newOwner == this && !_myCells.Contains(cell)) 
-        { 
-            _myCells.Add(cell);
-        }
-    }
-
 
     public override void OfferToBuildNest(Region region)
     {
-        throw new System.NotImplementedException();
+        List<TerrainCell> cells = region.GetRegionCells();
+        TerrainCell nestCell = cells[Random.Range(0, cells.Count-1)];
+        _builder.TryBuildNest(nestCell);
     }
 }

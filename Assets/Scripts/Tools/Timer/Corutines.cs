@@ -11,5 +11,8 @@ public sealed class Coroutines : DontDestroyOnLoadSingletone<Coroutines>
     {
         instance.StopCoroutine(corutine);
     }
-
+    public static void StopRoutine(Coroutine corutine)
+    {
+        instance.StopCoroutine(corutine);
+    }
 }

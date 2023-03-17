@@ -9,15 +9,15 @@ namespace TileSystem
         private List<TerrainCell> _regionCells = new();
 
         public bool isNestInRegion;
-        private bool isRegionControledOnePlayer;
 
+        private bool isRegionControledOnePlayer;
         private GameObject _regionView;
         private LineRenderer _regionBoundes;
         private NestBuildView _buildView;
 
         private CellType _cellType;
 
-        private Dictionary<GameAcktor, SubRegionView> _views = new();
+        private Dictionary<PlayersList, SubRegionView> _views = new();
 
         public bool isFade = true;
 
@@ -32,11 +32,15 @@ namespace TileSystem
             {
                 cell.region = this;
                 isNestInRegion |= cell.isNestBuilt;
-                FindSubRegionForCell(cell);
+                cell.OnCellFilled += FindSubRegionForCell;
             }
             DrawRegionBoundes();
         }
 
+        public List<TerrainCell> GetRegionCells() 
+        {
+            return _regionCells;
+        }
         public void AddCell(TerrainCell cell) 
         {
             if (!_regionCells.Contains(cell)) 
@@ -64,7 +68,7 @@ namespace TileSystem
 
         public void ShowCellsInfo() 
         {
-            foreach (KeyValuePair<GameAcktor, SubRegionView> pair in _views)
+            foreach (KeyValuePair<PlayersList, SubRegionView> pair in _views)
             {
                 pair.Value.ShowCellsInfo();
             }
@@ -74,7 +78,7 @@ namespace TileSystem
 
         public void HideCellsInfo() 
         {
-            foreach(KeyValuePair<GameAcktor, SubRegionView> pair in _views) 
+            foreach(KeyValuePair<PlayersList, SubRegionView> pair in _views) 
             {
                 pair.Value.HideCellsInfo();
             }
@@ -85,14 +89,12 @@ namespace TileSystem
 
         private void FindSubRegionForCell(TerrainCell cell) 
         {
-            if (_views.ContainsKey(cell.owner))
+            if (!_views.ContainsKey(cell.owner.acktorName))
+                _views.Add(cell.owner.acktorName, CreateNewSubViewElement());
+            _views[cell.owner.acktorName].AddCell(cell);
+            if (isFade) 
             {
-                _views[cell.owner].AddCell(cell);
-            }
-            else
-            {
-                _views.Add(cell.owner, CreateNewSubViewElement());
-                _views[cell.owner].AddCell(cell);
+                _views[cell.owner.acktorName].HideCellsInfo();
             }
         }
 
@@ -109,18 +111,23 @@ namespace TileSystem
 
         private void DeleteEmptySubViewElement(GameAcktor owner)
         {
-            Object.Destroy(_views[owner].gameObject);
-            _views.Remove(owner);
+            Object.Destroy(_views[owner.acktorName].gameObject);
+            _views.Remove(owner.acktorName);
         }
 
         private void NotifyIfRegionControlStatusChanged(TerrainCell cell) 
         { 
             if(IsOnePlayerControlRegion()) 
             {
+                isRegionControledOnePlayer = true;
                 EventBus.RaiseEvent<IRegionOwnershipStatusChangedHandler>(it => it.RegionControledBySinglePlayer(this, cell.owner));
                 if(cell.owner.acktorName == PlayersList.Player && !isNestInRegion) 
                 {
                     ShowNestBuildingViewForPlayer();
+                }
+                else 
+                {
+                    cell.owner.OfferToBuildNest(this);
                 }
             }
             else if (isRegionControledOnePlayer) 

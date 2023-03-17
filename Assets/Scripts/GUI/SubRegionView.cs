@@ -203,7 +203,7 @@ public class SubRegionView : MonoBehaviour
         cell.OnNestConditionChenge -= ChangeNestCondition;
         cell.OnFoodNumberChenge -= ChangeFoodNumber;
     }
-    private void ChangeOwner(GameAcktor previousOwner, GameAcktor newOwner, TerrainCell cell)
+    private void ChangeOwner(GameAcktor newOwner, TerrainCell cell)
     {
         if (newOwner != owner)
         {

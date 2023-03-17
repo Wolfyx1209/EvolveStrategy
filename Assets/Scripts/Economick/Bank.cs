@@ -1,21 +1,18 @@
 using EventBusSystem;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class Bank : Singletone<Bank>
 {
     private Dictionary<PlayersList, int> _playersPoints = new();
-
-    private void Awake()
+    public bool OpenAnAccount(PlayersList acktor, int startPoints) 
     {
-        Debug.Log(1);
-        GameAcktor[] acktors = FindObjectsOfType<GameAcktor>();
-        foreach (GameAcktor acktor in acktors) 
+        if (_playersPoints.ContainsKey(acktor))
         {
-            Debug.Log(acktor.acktorName);
-            _playersPoints.Add(acktor.acktorName, 0);
+            return false;
         }
+        _playersPoints.Add(acktor, startPoints);
+        return false;
     }
     public bool TryToBuy(PlayersList acktor, int cost)
     {
