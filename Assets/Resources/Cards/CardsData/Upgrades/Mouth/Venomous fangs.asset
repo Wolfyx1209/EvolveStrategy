@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 03d6d99182ccc044a9db53335259e35b, type: 3}
-  m_Name: Forked fin
+  m_Name: Venomous fangs
   m_EditorClassIdentifier: 
-  cardType: 4
-  title: Forcked fin
-  number: 1
-  image: {fileID: -119959419, guid: fa2c4e88f56da284a9dffcf4e1f02d45, type: 3}
-  cost: 100
-  attackBonus: 0
-  defenseBonus: 5
-  walckSpeedBonus: 0
-  spawnSpeedBonus: 10
-  swimSpeedTimeBonus: 50
-  climbSpeedBonus: 0
-  coldResistanceBonus: 0
-  heatResistanceBonus: 0
-  poisonResistanceBonus: 0
+  cardType: 0
+  title: Venomous fangs
+  number: 0
+  image: {fileID: 0}
+  cost: 0
+  _attackLevel: 3
+  _defenseLevel: 1
+  _spawnSpeedevel: 0
+  _walkSpeedLevel: 0
+  _swimSpeedTimeLevel: 0
+  _climbSpeedLevel: 0
+  _coldResistanceLevel: 0
+  _heatResistanceLevel: 0
+  _poisonResistanceLevel: 1
   openCards: []
